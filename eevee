@@ -1,0 +1,1815 @@
+#!/usr/bin/env python3
+import os
+import sys
+import distro
+from shutil import which
+import json
+from shutil import copyfile
+from shutil import copytree
+import itertools
+
+def err_text(text):
+    return f"\x1b[6;30;41m{text}\x1b[0m"
+
+if which('tabulate') is None:
+    os.system('pip install tabulate')
+
+from tabulate import tabulate
+
+if which('7z') is None:
+    if distro.name() == 'Manjaro Linux':
+        print("7-ZIP is not installed, Enter Your Password to install it.")
+        os.system('sudo pacman -Sy && sudo pacman -S p7zip')
+    else:
+        sys.exit(err_text("7z not found in path, please install it."))
+
+if which('rar') is None:
+    if distro.name() == 'Manjaro Linux':
+        print("RAR is not installed, Enter Your Password to install it.")
+        os.system('sudo pacman -Sy && sudo pamac install rar')
+    else:
+        sys.exit(err_text("rar not found in path, please install it."))
+
+if which('php') is None:
+    sys.exit(err_text('php interpreter not found in path'))
+
+if __name__ != '__main__':
+    sys.exit(err_text("Eevee can't be run from other scripts."))
+
+PROJECT_ROOT = os.path.abspath('/'.join(__file__.split('/')[:-1]))
+
+class AndroidSdkBuilder:
+
+    def __init__(self, android_app_pkg_name):
+        self.pkg_name = android_app_pkg_name
+        self.cpp_route = f'{PROJECT_ROOT}/app/android/cpp'
+        self.java_route = f'{PROJECT_ROOT}/app/android/java/{self.pkg_name.replace(".", "/")}'
+        self.di_route = f'{self.java_route}/di'
+        self.api_client_di_route = f'{self.di_route}/api_client'
+        self.network_route = f'{self.java_route}/model/network'
+        self.network_client_route = f'{self.network_route}/client'
+        self.network_core_route = f'{self.network_route}/core'
+        self.network_constant_route = f'{self.network_route}/constant'
+        self.network_response_route = f'{self.network_route}/response'
+        self.network_service_route = f'{self.network_route}/service'
+        self.network_validator_route = f'{self.network_route}/validator'
+        self.provider_route = f'{self.java_route}/provider'
+        self.magician_route = f'{self.java_route}/utils/magician'
+
+    def create_core(self):
+        android_bundle_dirs = [
+            self.cpp_route,
+            self.java_route,
+            self.di_route,
+            self.api_client_di_route,
+            self.network_route,
+            self.network_client_route,
+            self.network_core_route,
+            self.network_constant_route,
+            self.network_response_route,
+            self.network_service_route,
+            self.network_validator_route,
+            self.provider_route,
+            self.magician_route
+        ]
+        for _android_bundle_dir in android_bundle_dirs:
+            if not os.path.exists(_android_bundle_dir):
+                os.system(f'mkdir -p "{_android_bundle_dir}"')
+            os.system(f'mkdir -p "{self.java_route}"')
+            os.system(f'mkdir -p "{self.di_route}"')
+            os.system(f'mkdir -p "{self.api_client_di_route}"')
+            os.system(f'mkdir -p "{self.network_route}"')
+            os.system(f'mkdir -p "{self.network_client_route}"')
+            os.system(f'mkdir -p "{self.network_core_route}"')
+            os.system(f'mkdir -p "{self.network_constant_route}"')
+            os.system(f'mkdir -p "{self.network_response_route}"')
+            os.system(f'mkdir -p "{self.network_service_route}"')
+            os.system(f'mkdir -p "{self.network_validator_route}"')
+            os.system(f'mkdir -p "{self.provider_route}"')
+            os.system(f'mkdir -p "{self.magician_route}"')
+
+        with open(f'{self.network_core_route}/ElectroResponse.kt', 'w+') as electro_response_file:
+            electro_response_file.write(f'package {self.pkg_name}.model.network.core\n\n')
+            electro_response_file.write(f'import {self.pkg_name}.model.network.constant.ApiResponseConstant\n')
+            electro_response_file.write(f'import com.google.gson.annotations.SerializedName\n\n')
+            electro_response_file.write(f'data class ElectroResponse<T>(\n')
+            electro_response_file.write(f'    @SerializedName(ApiResponseConstant.RESPONSE_STATE) val responseState: String,\n')
+            electro_response_file.write(f'    @SerializedName(ApiResponseConstant.DATA) val data: T?\n')
+            electro_response_file.write(f')\n')
+
+        with open(f'{self.network_core_route}/MultipartHelper.java', 'w+') as multipart_helper_file:
+            multipart_helper_file.write(f'package {self.pkg_name}.model.network.core;\n\n')
+
+            multipart_helper_file.write('import java.io.File;\n')
+            multipart_helper_file.write('import okhttp3.MediaType;\n')
+            multipart_helper_file.write('import okhttp3.MultipartBody;\n')
+            multipart_helper_file.write('import okhttp3.RequestBody;\n\n')
+
+            multipart_helper_file.write('public class MultipartHelper {\n')
+            multipart_helper_file.write('    public static RequestBody createRequestBody(String payload) {\n')
+            multipart_helper_file.write('        return RequestBody.create(payload, MediaType.parse("multipart/form-data"));\n')
+            multipart_helper_file.write('    }\n\n')
+
+            multipart_helper_file.write('    /**\n')
+            multipart_helper_file.write('     * @param partKey: server identifier for its file.\n')
+            multipart_helper_file.write('     * @param imageName: original name of image.\n')
+            multipart_helper_file.write('     * @param image: file pointing to real image\n')
+            multipart_helper_file.write('     */\n')
+            multipart_helper_file.write('    public static MultipartBody.Part createMultipartBodyPartImage(String partKey, String imageName, File image) {\n')
+            multipart_helper_file.write('        RequestBody requestBody = RequestBody.create(image, MediaType.parse("image/*"));\n')
+            multipart_helper_file.write('        return MultipartBody.Part.createFormData(partKey, imageName, requestBody);\n')
+            multipart_helper_file.write('    }\n')
+            multipart_helper_file.write('}\n')
+
+        with open(f'{self.network_constant_route}/ApiResponseConstant.kt', 'w+') as api_res_const_file:
+            api_res_const_file.write(f'package {self.pkg_name}.model.network.constant\n\n')
+            api_res_const_file.write(f'object ApiResponseConstant {{\n')
+            api_res_const_file.write(f'    const val RESPONSE_STATE = "state"\n')
+            api_res_const_file.write(f'    const val DATA = "data"\n')
+            api_res_const_file.write(f'    const val EXCEPTIONS = "exceptions"\n')
+            api_res_const_file.write(f'    const val MISSING_PARAM = "missing_param"\n')
+            api_res_const_file.write(f'    const val INVALID_VALUE_OF_PARAM = "invalid_value_of_param"\n')
+            api_res_const_file.write(f'    const val ID = "id"\n')
+            api_res_const_file.write(f'    const val UID = "uid"\n')
+            api_res_const_file.write(f'    const val CREATED_AT = "created_at"\n')
+            api_res_const_file.write(f'    const val UPDATED_AT = "updated_at"\n')
+            api_res_const_file.write(f'}}\n')
+
+        with open(f'{self.network_constant_route}/ApiRequestConstant.kt', 'w+') as api_req_const_file:
+            api_req_const_file.write(f'package {self.pkg_name}.model.network.constant\n\n')
+            api_req_const_file.write(f'object ApiRequestConstant {{\n')
+            api_req_const_file.write(f'    const val API_KEY = "__api_key__"\n')
+            api_req_const_file.write(f'}}\n')
+
+        with open(f'{self.network_constant_route}/ElectroResponseState.kt', 'w+') as electro_res_state_file:
+            electro_res_state_file.write(f'package {self.pkg_name}.model.network.constant\n\n')
+            electro_res_state_file.write(f'object ElectroResponseState {{\n')
+            electro_res_state_file.write(f'    const val OK = "OK"\n')
+            electro_res_state_file.write(f'    const val UNDER_MAINTENANCE = "UNDER_MAINTENANCE"\n')
+            electro_res_state_file.write(f'    const val UNAUTHORIZED = "UNAUTHORIZED"\n')
+            electro_res_state_file.write(f'    const val COMPROMISED = "COMPROMISED"\n')
+            electro_res_state_file.write(f'    const val BAD_REQUEST = "BAD_REQUEST"\n')
+            electro_res_state_file.write(f'    const val FAILURE = "FAILURE"\n')
+            electro_res_state_file.write(f'}}\n')
+
+        api_agents = os.listdir(f'{PROJECT_ROOT}/app/agents')
+
+        with open(f'{self.network_client_route}/ApiClient.kt', 'w+') as api_client_file:
+            api_client_file.write(f'package {self.pkg_name}.model.network.client\n\n')
+            api_client_file.write(f'import {self.pkg_name}.model.network.service.*\n\n')
+            api_client_file.write(f'class ApiClient(\n')
+            for api_agent in api_agents:
+                comma_prefix = ',' if api_agent != api_agents[-1] else ''
+                api_client_file.write(f'    val {api_agent[0].lower() + api_agent[1:-4]}Service: {api_agent[:-4]}Service{comma_prefix}\n')
+            api_client_file.write(f')\n')
+
+        with open(f'{self.api_client_di_route}/ApiClientModule.kt', 'w+') as api_client_module_file:
+            api_client_module_file.write(f'package {self.pkg_name}.di.api_client\n\n')
+            api_client_module_file.write(f'import {self.pkg_name}.model.network.client.ApiClient\n')
+            api_client_module_file.write(f'import {self.pkg_name}.model.network.service.*\n')
+            api_client_module_file.write(f'import dagger.Module\n')
+            api_client_module_file.write(f'import dagger.Provides\n')
+            api_client_module_file.write(f'import dagger.hilt.InstallIn\n')
+            api_client_module_file.write(f'import dagger.hilt.components.SingletonComponent\n')
+            api_client_module_file.write(f'import retrofit2.Retrofit\n')
+            api_client_module_file.write(f'import javax.inject.Singleton\n\n')
+            api_client_module_file.write(f'@Module\n')
+            api_client_module_file.write(f'@InstallIn(SingletonComponent::class)\n')
+            api_client_module_file.write(f'class ApiClientModule {{\n')
+            api_client_module_file.write(f'    @Provides\n')
+            api_client_module_file.write(f'    @Singleton\n')
+            api_client_module_file.write(f'    fun provideApiClient(retrofit: Retrofit): ApiClient {{\n')
+            api_client_module_file.write(f'        return ApiClient(\n')
+            for api_agent in api_agents:
+                comma_prefix = ',' if api_agent != api_agents[-1] else ''
+                api_client_module_file.write(f'            retrofit.create({api_agent[:-4]}Service::class.java){comma_prefix}\n')
+            api_client_module_file.write(f'        )\n')
+            api_client_module_file.write(f'    }}\n')
+            api_client_module_file.write(f'}}\n')
+
+        with open(f'{self.api_client_di_route}/OkHttpClientModule.kt', 'w+') as ok_http_client_module_file:
+            ok_http_client_module_file.write(f'package {self.pkg_name}.di.api_client\n\n')
+            ok_http_client_module_file.write(f'import dagger.Module\n')
+            ok_http_client_module_file.write(f'import dagger.Provides\n')
+            ok_http_client_module_file.write(f'import dagger.hilt.InstallIn\n')
+            ok_http_client_module_file.write(f'import dagger.hilt.components.SingletonComponent\n')
+            ok_http_client_module_file.write(f'import okhttp3.OkHttpClient\n')
+            ok_http_client_module_file.write(f'import okhttp3.logging.HttpLoggingInterceptor\n')
+            ok_http_client_module_file.write(f'import java.util.concurrent.TimeUnit\n')
+            ok_http_client_module_file.write(f'import javax.inject.Singleton\n\n')
+            ok_http_client_module_file.write(f'@Module\n')
+            ok_http_client_module_file.write(f'@InstallIn(SingletonComponent::class)\n')
+            ok_http_client_module_file.write(f'class OkHttpClientModule {{\n')
+            ok_http_client_module_file.write(f'    @Provides\n')
+            ok_http_client_module_file.write(f'    @Singleton\n')
+            ok_http_client_module_file.write(f'    fun provideOkHttpClient(): OkHttpClient {{\n')
+            ok_http_client_module_file.write(f'        val logging = HttpLoggingInterceptor()\n')
+            ok_http_client_module_file.write(f'        logging.setLevel(HttpLoggingInterceptor.Level.HEADERS)\n\n')
+            ok_http_client_module_file.write(f'        return OkHttpClient.Builder()\n')
+            ok_http_client_module_file.write(f'            .readTimeout(5, TimeUnit.MINUTES)\n')
+            ok_http_client_module_file.write(f'            .connectTimeout(5, TimeUnit.MINUTES)\n')
+            ok_http_client_module_file.write(f'            .addInterceptor(logging)\n')
+            ok_http_client_module_file.write(f'            .build()\n')
+            ok_http_client_module_file.write(f'    }}\n')
+            ok_http_client_module_file.write(f'}}\n')
+
+        with open(f'{self.cpp_route}/electro_lib_{self.pkg_name.replace(".", "_")}.cpp', 'w+') as electro_lib_file:
+            electro_lib_file_content = [
+                '#include <jni.h>',
+                '#include <string>',
+                '',
+                'extern "C" JNIEXPORT jstring JNICALL',
+                f'Java_{self.pkg_name.replace("_", "_1").replace(".", "_")}_provider_ElectroLibAccessProvider_getMasterKey(JNIEnv* env, jobject _j) {{',
+                '{}std::string s = "{}";'.format(' ' * 4, EEVEE_CONFIG.get_tink_master_key()),
+                '{}return env->NewStringUTF(s.c_str());'.format(' ' * 4),
+                '}',
+                '',
+                'extern "C" JNIEXPORT jstring JNICALL',
+                f'Java_{self.pkg_name.replace("_", "_1").replace(".", "_")}_provider_ElectroLibAccessProvider_getSecretKey(JNIEnv* env, jobject _j) {{',
+                '{}std::string s = "{}";'.format(' ' * 4, EEVEE_CONFIG.get_android_tink_secret_key()),
+                '{}return env->NewStringUTF(s.c_str());'.format(' ' * 4),
+                '}',
+                '',
+                'extern "C" JNIEXPORT jstring JNICALL',
+                f'Java_{self.pkg_name.replace("_", "_1").replace(".", "_")}_provider_ElectroLibAccessProvider_getServerBaseUrl(JNIEnv* env, jobject _j) {{',
+                '{}std::string s = "{}";'.format(' ' * 4, EEVEE_CONFIG.get_server_base_url()),
+                '{}return env->NewStringUTF(s.c_str());'.format(' ' * 4),
+                '}'
+            ]
+
+            for env_key in EEVEE_CONFIG.get_env_list():
+                if env_key[0] == '__api_key__':
+                    electro_lib_file_content.append('\nextern "C" JNIEXPORT jstring JNICALL'),
+                    electro_lib_file_content.append(f'Java_{self.pkg_name.replace("_", "_1").replace(".", "_")}_provider_ElectroLibAccessProvider_getServerApiKey(JNIEnv* env, jobject _j) {{'),
+                    electro_lib_file_content.append('{}std::string s = "{}";'.format(' ' * 4, env_key[1])),
+                    electro_lib_file_content.append('{}return env->NewStringUTF(s.c_str());'.format(' ' * 4)),
+                    electro_lib_file_content.append('}')
+                    break
+
+            for lin in electro_lib_file_content:
+                electro_lib_file.write(f'{lin}\n')
+
+        with open(f'{self.provider_route}/ElectroLibAccessProvider.kt', 'w+') as electro_lib_provider_file:
+            electro_lib_provider_file.write(f'package {self.pkg_name}.provider\n\n')
+            electro_lib_provider_file.write(f'class ElectroLibAccessProvider {{\n')
+            electro_lib_provider_file.write(f'    external fun getMasterKey(): String\n')
+            electro_lib_provider_file.write(f'    external fun getSecretKey(): String\n')
+            electro_lib_provider_file.write(f'    external fun getServerBaseUrl(): String\n')
+
+            if len(list(filter(lambda x: x[0] == '__api_key__', EEVEE_CONFIG.get_env_list()))) == 1:
+                electro_lib_provider_file.write(f'    external fun getServerApiKey(): String\n')
+
+            electro_lib_provider_file.write(f'\n    companion object {{\n')
+            electro_lib_provider_file.write(f'        init {{\n')
+            electro_lib_provider_file.write(f'            System.loadLibrary("electro_lib")\n')
+            electro_lib_provider_file.write(f'        }}\n')
+            electro_lib_provider_file.write(f'    }}\n')
+            electro_lib_provider_file.write(f'}}\n')
+
+        with open(f'{self.di_route}/ElectroLibAccessProviderModule.kt', 'w+') as electro_lib_access_provider_module:
+            electro_lib_access_provider_module.write(f'package {self.pkg_name}.di\n\n')
+            electro_lib_access_provider_module.write(f'import {self.pkg_name}.provider.ElectroLibAccessProvider\n')
+            electro_lib_access_provider_module.write(f'import dagger.Module\n')
+            electro_lib_access_provider_module.write(f'import dagger.Provides\n')
+            electro_lib_access_provider_module.write(f'import dagger.hilt.InstallIn\n')
+            electro_lib_access_provider_module.write(f'import dagger.hilt.components.SingletonComponent\n')
+            electro_lib_access_provider_module.write(f'import javax.inject.Singleton\n\n')
+            electro_lib_access_provider_module.write(f'@Module\n')
+            electro_lib_access_provider_module.write(f'@InstallIn(SingletonComponent::class)\n')
+            electro_lib_access_provider_module.write(f'class ElectroLibAccessProviderModule {{\n')
+            electro_lib_access_provider_module.write(f'    @Provides\n')
+            electro_lib_access_provider_module.write(f'    @Singleton\n')
+            electro_lib_access_provider_module.write(f'    fun provideElectroLibAccessProviderModule(): ElectroLibAccessProvider {{\n')
+            electro_lib_access_provider_module.write(f'        return ElectroLibAccessProvider()\n')
+            electro_lib_access_provider_module.write(f'    }}\n')
+            electro_lib_access_provider_module.write(f'}}\n')
+
+        with open(f'{self.provider_route}/ElectroLibAccessProvider.kt', 'w+') as electro_lib_provider_file:
+            electro_lib_provider_file.write(f'package {self.pkg_name}.provider\n\n')
+            electro_lib_provider_file.write(f'class ElectroLibAccessProvider {{\n')
+            electro_lib_provider_file.write(f'    external fun getMasterKey(): String\n')
+            electro_lib_provider_file.write(f'    external fun getSecretKey(): String\n')
+            electro_lib_provider_file.write(f'    external fun getServerBaseUrl(): String\n')
+
+            if len(list(filter(lambda x: x[0] == '__api_key__', EEVEE_CONFIG.get_env_list()))) == 1:
+                electro_lib_provider_file.write(f'    external fun getServerApiKey(): String\n')
+
+            electro_lib_provider_file.write(f'\n    companion object {{\n')
+            electro_lib_provider_file.write(f'        init {{\n')
+            electro_lib_provider_file.write(f'            System.loadLibrary("electro_lib")\n')
+            electro_lib_provider_file.write(f'        }}\n')
+            electro_lib_provider_file.write(f'    }}\n')
+            electro_lib_provider_file.write(f'}}\n')
+
+        with open(f'{self.api_client_di_route}/RetrofitModule.kt', 'w+') as retrofit_module_file:
+            retrofit_module_file.write(f'package {self.pkg_name}.di.api_client\n\n')
+            retrofit_module_file.write(f'import {self.pkg_name}.provider.ElectroLibAccessProvider\n')
+            retrofit_module_file.write(f'import dagger.Module\n')
+            retrofit_module_file.write(f'import dagger.Provides\n')
+            retrofit_module_file.write(f'import dagger.hilt.InstallIn\n')
+            retrofit_module_file.write(f'import dagger.hilt.components.SingletonComponent\n')
+            retrofit_module_file.write(f'import okhttp3.OkHttpClient\n')
+            retrofit_module_file.write(f'import retrofit2.Retrofit\n')
+            retrofit_module_file.write(f'import retrofit2.converter.gson.GsonConverterFactory\n')
+            retrofit_module_file.write(f'import javax.inject.Singleton\n\n')
+            retrofit_module_file.write(f'@Module\n')
+            retrofit_module_file.write(f'@InstallIn(SingletonComponent::class)\n')
+            retrofit_module_file.write(f'class RetrofitModule {{\n')
+            retrofit_module_file.write(f'    @Provides\n')
+            retrofit_module_file.write(f'    @Singleton\n')
+            retrofit_module_file.write(f'    fun provideRetrofit(\n')
+            retrofit_module_file.write(f'        electroLibAccessProvider: ElectroLibAccessProvider,\n')
+            retrofit_module_file.write(f'        okHttpClient: OkHttpClient\n')
+            retrofit_module_file.write(f'    ): Retrofit {{\n')
+            retrofit_module_file.write(f'        return Retrofit.Builder()\n')
+            retrofit_module_file.write(f'            .baseUrl(electroLibAccessProvider.getServerBaseUrl())\n')
+            retrofit_module_file.write(f'            .addConverterFactory(GsonConverterFactory.create())\n')
+            retrofit_module_file.write(f'            .client(okHttpClient)\n')
+            retrofit_module_file.write(f'            .build()\n')
+            retrofit_module_file.write(f'    }}\n')
+            retrofit_module_file.write(f'}}\n')
+
+        with open(f'{self.magician_route}/Magician.kt', 'w+') as magician_file:
+            magician_file.write(f'package {self.pkg_name}.utils.magician\n\n')
+            magician_file.write('import com.google.crypto.tink.Aead\n')
+            magician_file.write('import com.google.crypto.tink.subtle.Base64\n\n')
+            magician_file.write('class Magician(\n')
+            magician_file.write('    private val aead: Aead,\n')
+            magician_file.write('    private val secret: ByteArray\n')
+            magician_file.write(') {\n')
+            magician_file.write('    fun encrypt(content: String, secretKey: String): String {\n')
+            magician_file.write('        return encrypt(content, secretKey.toByteArray())\n')
+            magician_file.write('    }\n\n')
+            magician_file.write('    private fun encrypt(content: String, secretKey: ByteArray): String {\n')
+            magician_file.write('        return Base64.encode(aead.encrypt(content.toByteArray(), secretKey))\n')
+            magician_file.write('    }\n\n')
+            magician_file.write('    fun encrypt(content: String): String {\n')
+            magician_file.write('        return encrypt(content, secret)\n')
+            magician_file.write('    }\n\n')
+            magician_file.write('    fun decrypt(cipherText: String): String {\n')
+            magician_file.write('        return decrypt(cipherText, secret)\n')
+            magician_file.write('    }\n\n')
+            magician_file.write('    fun decrypt(cipherText: String, secretKey: String): String {\n')
+            magician_file.write('        return decrypt(cipherText, secretKey.toByteArray())\n')
+            magician_file.write('    }\n\n')
+            magician_file.write('    private fun decrypt(cipherText: String, secretKey: ByteArray): String {\n')
+            magician_file.write('        return String(aead.decrypt(Base64.decode(cipherText), secretKey))\n')
+            magician_file.write('    }\n\n')
+            magician_file.write('}\n')
+
+        with open(f'{self.di_route}/MagicianModule.kt', 'w+') as magician_module:
+            magician_module.write(f'package {self.pkg_name}.di\n\n')
+            magician_module.write(f'import {self.pkg_name}.provider.ElectroLibAccessProvider\n')
+            magician_module.write(f'import {self.pkg_name}.utils.magician.Magician\n')
+            magician_module.write(f'import com.google.crypto.tink.Aead\n')
+            magician_module.write(f'import com.google.crypto.tink.CleartextKeysetHandle\n')
+            magician_module.write(f'import com.google.crypto.tink.JsonKeysetReader\n')
+            magician_module.write(f'import com.google.crypto.tink.aead.AeadConfig\n')
+            magician_module.write(f'import com.google.crypto.tink.subtle.Hex\n')
+            magician_module.write(f'import java.nio.charset.Charset\n')
+            magician_module.write(f'import dagger.Module\n')
+            magician_module.write(f'import dagger.Provides\n')
+            magician_module.write(f'import dagger.hilt.InstallIn\n')
+            magician_module.write(f'import dagger.hilt.components.SingletonComponent\n')
+            magician_module.write(f'import javax.inject.Singleton\n\n')
+            magician_module.write(f'@Module\n')
+            magician_module.write(f'@InstallIn(SingletonComponent::class)\n')
+            magician_module.write(f'class MagicianModule {{\n')
+            magician_module.write(f'    @Provides\n')
+            magician_module.write(f'    @Singleton\n')
+            magician_module.write(f'    fun provideMagician(\n')
+            magician_module.write(f'        electroLibAccessProvider: ElectroLibAccessProvider\n')
+            magician_module.write(f'    ): Magician {{\n')
+            magician_module.write(f'        val bytes = Hex.decode(electroLibAccessProvider.getMasterKey())\n')
+            magician_module.write(f'        val masterKey = String(bytes, Charset.forName("UTF-8"))\n')
+            magician_module.write(f'        AeadConfig.register() // Registering only Aead Primitive\n')
+            magician_module.write(f'        val aead = CleartextKeysetHandle.read(JsonKeysetReader.withString(masterKey))\n')
+            magician_module.write(f'            .getPrimitive(Aead::class.java)\n')
+            magician_module.write(f'        return Magician(aead, electroLibAccessProvider.getSecretKey().toByteArray())\n')
+            magician_module.write(f'    }}\n')
+            magician_module.write(f'}}\n')
+
+        with open(f'{self.network_core_route}/BadRequest.kt', 'w+') as core_bad_request:
+            core_bad_request.write(f'package {self.pkg_name}.model.network.core\n\n')
+            core_bad_request.write(f'class BadRequest {{\n')
+            core_bad_request.write(f'    var missingParam: String? = null\n')
+            core_bad_request.write(f'    var invalidValueOfParam: String? = null\n\n')
+            core_bad_request.write(f'    fun getMoreInfo(callbacks: BadRequestCallbacks) {{\n')
+            core_bad_request.write(f'        when {{\n')
+            core_bad_request.write(f'            missingParam != null -> callbacks.onMissingParam(missingParam!!)\n')
+            core_bad_request.write(f'            invalidValueOfParam != null -> callbacks.onInvalidValueOfParam(invalidValueOfParam!!)\n')
+            core_bad_request.write(f'            else -> callbacks.onDebugModeDisabled()\n')
+            core_bad_request.write(f'        }}\n')
+            core_bad_request.write(f'    }}\n')
+            core_bad_request.write(f'}}\n\n')
+            core_bad_request.write(f'interface BadRequestCallbacks {{\n')
+            core_bad_request.write(f'    fun onMissingParam(param: String)\n')
+            core_bad_request.write(f'    fun onInvalidValueOfParam(param: String)\n')
+            core_bad_request.write(f'    fun onDebugModeDisabled()\n')
+            core_bad_request.write(f'}}\n')
+
+    def create_service_response_validator(self, agent_name):
+        with open(f'{self.network_service_route}/{agent_name}Service.kt', 'w+') as agent_service:
+            agent_service.write(f'package {self.pkg_name}.model.network.service\n\n')
+            agent_service.write(f'import {self.pkg_name}.model.network.constant.ApiRequestConstant\n')
+            agent_service.write(f'import {self.pkg_name}.model.network.response.{agent_name}Data\n')
+            agent_service.write(f'import {self.pkg_name}.model.network.core.ElectroResponse\n')
+            agent_service.write(f'import retrofit2.Call\n')
+            agent_service.write(f'import retrofit2.http.Field\n')
+            agent_service.write(f'import retrofit2.http.FormUrlEncoded\n')
+            agent_service.write(f'import retrofit2.http.POST\n\n')
+            agent_service.write(f'interface {agent_name}Service {{\n')
+            agent_service.write(f'    @FormUrlEncoded\n')
+            agent_route_name = RouteCreator(f'{agent_name}.php').get_route_name()
+            agent_service.write(f'    @POST("{agent_route_name}")\n')
+            agent_service.write(f'    fun {agent_name[0].lower() + agent_name[1:]}(\n')
+            agent_service.write(f'            @Field(ApiRequestConstant.API_KEY) api_key: String,\n')
+            agent_service.write(f'    ): Call<ElectroResponse<{agent_name}Data>>\n')
+            agent_service.write(f'}}\n')
+
+        with open(f'{self.network_response_route}/{agent_name}Response.kt', 'w+') as agent_response_file:
+            agent_response_file.write(f'package {self.pkg_name}.model.network.response\n\n')
+            agent_response_file.write(f'import {self.pkg_name}.model.network.constant.ApiResponseConstant\n')
+            agent_response_file.write(f'import com.google.gson.annotations.SerializedName\n\n')
+
+            agent_response_file.write(f'data class {agent_name}Data (\n')
+            agent_response_file.write(f'        @SerializedName(ApiResponseConstant.EXCEPTIONS) val exceptions: {agent_name}ResponseClasses.Exceptions?,\n')
+            agent_response_file.write(f'        @SerializedName("attribute_name") val attributeName: Boolean?\n')
+            agent_response_file.write(f')\n\n')
+
+            agent_response_file.write(f'object {agent_name}ResponseClasses {{\n')
+            agent_response_file.write(f'    data class Exceptions(\n')
+            agent_response_file.write(f'        @SerializedName(ApiResponseConstant.MISSING_PARAM) val missingParam: String?,\n')
+            agent_response_file.write(f'        @SerializedName(ApiResponseConstant.INVALID_VALUE_OF_PARAM) val invalidValueOfParam: String?,\n')
+            agent_response_file.write(f'        @SerializedName("some_exception_name") val exceptionName: Boolean?\n')
+            agent_response_file.write(f'    )\n')
+            agent_response_file.write('}\n')
+
+        with open(f'{self.network_validator_route}/{agent_name}Validator.kt', 'w+') as agent_validator_file:
+            agent_validator_file.write(f'package {self.pkg_name}.model.network.validator\n\n')
+            agent_validator_file.write(f'import {self.pkg_name}.model.network.constant.ElectroResponseState\n')
+            agent_validator_file.write(f'import {self.pkg_name}.model.network.response.{agent_name}Data\n')
+            agent_validator_file.write(f'import {self.pkg_name}.model.network.core.ElectroResponse\n')
+            agent_validator_file.write(f'import {self.pkg_name}.model.network.core.BadRequest\n')
+            agent_validator_file.write(f'import retrofit2.Response\n\n')
+
+            agent_validator_file.write(f'interface {agent_name}ValidatorCallbacks {{\n')
+            agent_validator_file.write(f'    fun onResponseUnsuccessful()\n')
+            agent_validator_file.write(f'    fun onUnderMaintenance()\n')
+            agent_validator_file.write(f'    fun onBadRequest(badRequest: BadRequest)\n')
+            agent_validator_file.write(f'//    fun onUnauthorized()\n')
+            agent_validator_file.write(f'//    fun onDataGotCompromised()\n')
+            agent_validator_file.write(f'//    fun areThingsWorked(thing: SomeType, thing2: SomeType)\n')
+            agent_validator_file.write(f'}}\n')
+
+            agent_validator_file.write(f'class {agent_name}Validator {{\n')
+            agent_validator_file.write(f'    companion object {{\n')
+            agent_validator_file.write(f'        fun validate(\n')
+            agent_validator_file.write(f'            response: Response<ElectroResponse<{agent_name}Data>>,\n')
+            agent_validator_file.write(f'            callbacks: {agent_name}ValidatorCallbacks\n')
+            agent_validator_file.write(f'        ) {{\n')
+            agent_validator_file.write(f'            when {{\n')
+            agent_validator_file.write(f'                response.isSuccessful -> {{\n')
+            agent_validator_file.write(f'                    response.body()?.let {{ electroResponse ->\n')
+            agent_validator_file.write(f'                        when (electroResponse.responseState) {{\n')
+            agent_validator_file.write(f'                            ElectroResponseState.UNDER_MAINTENANCE -> callbacks.onUnderMaintenance()\n')
+            agent_validator_file.write(f'                            ElectroResponseState.BAD_REQUEST -> {{\n')
+            agent_validator_file.write(f'                                val badRequest = BadRequest()\n')
+            agent_validator_file.write(f'                                electroResponse.data?.exceptions?.let {{ exceptions ->\n')
+            agent_validator_file.write(f'                                    exceptions.missingParam?.let {{ missingParam ->\n')
+            agent_validator_file.write(f'                                        badRequest.missingParam = missingParam\n')
+            agent_validator_file.write(f'                                    }}\n')
+            agent_validator_file.write('                                     exceptions.invalidValueOfParam?.let { invalidValueOfParam ->\n')
+            agent_validator_file.write('                                         badRequest.invalidValueOfParam = invalidValueOfParam\n')
+            agent_validator_file.write('                                     }\n')
+            agent_validator_file.write(f'                                }}\n')
+            agent_validator_file.write(f'                                callbacks.onBadRequest(badRequest)\n')
+            agent_validator_file.write(f'                            }}\n')
+            agent_validator_file.write(f'//                            ElectroResponseState.UNAUTHORIZED -> {{\n')
+            agent_validator_file.write(f'//                                callbacks.onUnauthorized()\n')
+            agent_validator_file.write(f'//                            }}\n')
+            agent_validator_file.write(f'//                            ElectroResponseState.COMPROMISED -> {{\n')
+            agent_validator_file.write(f'//                                callbacks.onDataGotCompromised()\n')
+            agent_validator_file.write(f'//                            }}\n')
+            agent_validator_file.write(f'                            ElectroResponseState.FAILURE -> {{\n')
+            agent_validator_file.write(f'//                                electroResponse.data?.exceptions?.let {{ exceptions ->\n')
+            agent_validator_file.write(f'//                                    exceptions.failedToDoSo?.let {{\n')
+            agent_validator_file.write(f'//                                        callbacks.onFailedToDoSo()\n')
+            agent_validator_file.write(f'//                                    }}\n')
+            agent_validator_file.write(f'//                                }}\n')
+            agent_validator_file.write(f'                            }}\n')
+            agent_validator_file.write(f'                            else -> {{ // OK\n')
+            agent_validator_file.write(f'                                electroResponse.data?.let {{ data ->\n')
+            agent_validator_file.write(f'//                                    data.areThingsWorked?.let {{\n')
+            agent_validator_file.write(f'//                                        callbacks.areThingsWorked(thing1, thing2)\n')
+            agent_validator_file.write(f'//                                    }}\n')
+            agent_validator_file.write(f'                                }}\n')
+            agent_validator_file.write(f'                            }}\n')
+            agent_validator_file.write(f'                        }}\n')
+            agent_validator_file.write(f'                    }}\n')
+            agent_validator_file.write(f'                }}\n')
+            agent_validator_file.write(f'                else -> callbacks.onResponseUnsuccessful()\n')
+            agent_validator_file.write(f'            }}\n')
+            agent_validator_file.write(f'        }}\n')
+            agent_validator_file.write(f'    }}\n')
+            agent_validator_file.write(f'}}\n')
+
+    def make_from_first_pkg_service_response_validator(self, first_pkg_name):
+        for service in os.listdir(f'{PROJECT_ROOT}/app/android/java/{first_pkg_name.replace(".", "/")}/model/network/service'):
+            with open(f'{self.network_service_route}/{service}', 'w+') as agent_service_to_write:
+                with open(f'{PROJECT_ROOT}/app/android/java/{first_pkg_name.replace(".", "/")}/model/network/service/{service}', 'r') as agent_service:
+                    for lin in agent_service.readlines():
+                        if first_pkg_name in lin:
+                            lin = lin.replace(first_pkg_name, self.pkg_name)
+                        agent_service_to_write.write(lin)
+
+        for response_file in os.listdir(f'{PROJECT_ROOT}/app/android/java/{first_pkg_name.replace(".", "/")}/model/network/response'):
+            with open(f'{self.network_response_route}/{response_file}', 'w+') as agent_response_to_write:
+                with open(f'{PROJECT_ROOT}/app/android/java/{first_pkg_name.replace(".", "/")}/model/network/response/{response_file}', 'r') as agent_response:
+                    for lin in agent_response.readlines():
+                        if first_pkg_name in lin:
+                            lin = lin.replace(first_pkg_name, self.pkg_name)
+                        agent_response_to_write.write(lin)
+
+        for validator_file in os.listdir(f'{PROJECT_ROOT}/app/android/java/{first_pkg_name.replace(".", "/")}/model/network/validator'):
+            with open(f'{self.network_validator_route}/{validator_file}', 'w+') as agent_validator_to_write:
+                with open(f'{PROJECT_ROOT}/app/android/java/{first_pkg_name.replace(".", "/")}/model/network/validator/{validator_file}', 'r') as agent_validator:
+                    for lin in agent_validator.readlines():
+                        if first_pkg_name in lin:
+                            lin = lin.replace(first_pkg_name, self.pkg_name)
+                        agent_validator_to_write.write(lin)
+
+class TableColumn:
+
+    def __init__(self, column_detail):
+        self.name = column_detail[0] if column_detail[0][-1] != '?' else column_detail[0][0:-1]
+        self.nullable = '?' == column_detail[0][-1]  # checking if ? is at end
+        self.type_sample = column_detail[1]
+        """ Creating PHP TYPE variable """
+        self.php_type = '?' if self.nullable else ''
+        if type(column_detail[1]) is str:
+            self.php_type = f'{self.php_type}string'
+        elif type(column_detail[1]) is int:
+            self.php_type = f'{self.php_type}int'
+        elif type(column_detail[1]) is float:
+            self.php_type = f'{self.php_type}float'
+        elif type(column_detail[1]) is bool:
+            self.php_type = f'{self.php_type}bool'
+        self.length = column_detail[2]
+        self.has_default_value = len(column_detail) == 4
+        self.default_value = column_detail[-1] if self.has_default_value else None
+
+    def get_type(self):
+        return type(self.type_sample)
+
+
+def pascal_case(x):
+    if '_' not in x:
+        return x[0].upper() + x[1:]
+    return ''.join(list(map(lambda b: b[0].upper() + b[1:], x.split('_'))))
+
+
+def get_php_value_for_python_value(v):
+    if isinstance(v, type(None)):
+        return 'null'
+    elif type(v) is str:
+        return f'"{v}"'
+    elif type(v) is bool:
+        return 'true' if v else 'false'
+    else:
+        return f'{v}'
+
+
+def get_subsets(payload):
+    subsets = []
+    for L in range(0, len(payload) + 1):
+        for subset in itertools.combinations(payload, L):
+            if len(subset) >= 1:
+                subsets.append(subset)
+    return subsets
+
+class TableSchemaEntitiesDaoFactoriesCreator:
+
+    def __init__(self, table_structure_file):
+        with open(f'{PROJECT_ROOT}/app/database/structures/{table_structure_file}', 'r') as f:
+            table_structure_content = json.loads(f.read())
+            self.slug = table_structure_file.split('.json')[0]
+            self.table_name = table_structure_content['__table_name__']
+            self.table_cols = table_structure_content['__cols__']
+
+    def create_entity(self):
+        with open(f'{PROJECT_ROOT}/app/database/entities/{self.slug}Entity.php', 'w+') as slug_entity:
+            slug_entity.write('<?php\n\n')
+            slug_entity.write(f'class {self.slug}Entity {{\n')
+            slug_entity.write(f'    const TABLE_NAME = "{self.table_name}";\n\n')
+
+            table_cols_with_default_values = []
+            table_cols_without_default_values = []
+
+            slug_entity.write(f'    private string $id;\n')
+            slug_entity.write(f'    private string $uid;\n')
+            for table_col in self.table_cols:
+                table_col = TableColumn(table_col)
+                slug_entity.write(f'    private {table_col.php_type} ${table_col.name};\n')
+                if table_col.has_default_value:
+                    table_cols_with_default_values.append(table_col)
+                else:
+                    table_cols_without_default_values.append(table_col)
+            slug_entity.write(f'    private string $created_at;\n')
+            slug_entity.write(f'    private string $updated_at;\n\n')
+
+            params_str = 'string $uid, '
+
+            for table_col in table_cols_without_default_values:
+                params_str = f'{params_str}{table_col.php_type} ${table_col.name}, '
+
+            params_str = f'{params_str} string $created_at, string $updated_at'
+
+            if len(table_cols_with_default_values) > 0:
+                params_str = f'{params_str}, '
+
+            for table_col in table_cols_with_default_values:
+                params_str = f'{params_str}{table_col.php_type} ${table_col.name} = '
+                params_str = params_str + get_php_value_for_python_value(table_col.default_value)
+                if table_col != table_cols_with_default_values[-1]:
+                    params_str = f'{params_str}, '
+
+            slug_entity.write(f'    public function __construct({params_str}) {{\n')
+            slug_entity.write(f'        $this->uid = $uid;\n')
+
+            for table_col in table_cols_without_default_values:
+                slug_entity.write(f'        $this->{table_col.name} = ${table_col.name};\n')
+
+            for table_col in table_cols_with_default_values:
+                slug_entity.write(f'        $this->{table_col.name} = ${table_col.name};\n')
+
+            slug_entity.write(f'        $this->created_at = $created_at;\n')
+            slug_entity.write(f'        $this->updated_at = $updated_at;\n')
+            slug_entity.write(f'        }}\n\n')
+
+            slug_entity.write(f'    public function getId(): ?string {{\n')
+            slug_entity.write(f'        return $this->id;\n')
+            slug_entity.write(f'    }}\n\n')
+
+            slug_entity.write(f'    public function setId(string $id): void {{\n')
+            slug_entity.write(f'        $this->id = $id;\n')
+            slug_entity.write(f'    }}\n\n')
+
+            slug_entity.write(f'    public function getUid(): string {{\n')
+            slug_entity.write(f'        return $this->uid;\n')
+            slug_entity.write(f'    }}\n\n')
+
+            slug_entity.write(f'    public function setUid(string $uid): void {{\n')
+            slug_entity.write(f'        $this->uid = $uid;\n')
+            slug_entity.write(f'    }}\n\n')
+
+            for table_col in table_cols_without_default_values:
+                if table_col.get_type() is bool:
+                    slug_entity.write(f'    public function is{pascal_case(table_col.name)}(): {table_col.php_type} {{\n')
+                else:
+                    slug_entity.write(f'    public function get{pascal_case(table_col.name)}(): {table_col.php_type} {{\n')
+
+                slug_entity.write(f'        return $this->{table_col.name};\n')
+                slug_entity.write(f'    }}\n\n')
+
+                params_str = f'{table_col.php_type} ${table_col.name}'
+                slug_entity.write(f'    public function set{pascal_case(table_col.name)}({params_str}): void {{\n')
+                slug_entity.write(f'        $this->{table_col.name} = ${table_col.name};\n')
+                slug_entity.write(f'    }}\n\n')
+
+            for table_col in table_cols_with_default_values:
+                if table_col.get_type() is bool:
+                    slug_entity.write(f'    public function is{pascal_case(table_col.name)}(): {table_col.php_type} {{\n')
+                else:
+                    slug_entity.write(f'    public function get{pascal_case(table_col.name)}(): {table_col.php_type} {{\n')
+
+                slug_entity.write(f'        return $this->{table_col.name};\n')
+                slug_entity.write(f'    }}\n\n')
+
+                params_str = f'{table_col.php_type} ${table_col.name} = '
+                params_str = params_str + get_php_value_for_python_value(table_col.default_value)
+
+                slug_entity.write(f'    public function set{pascal_case(table_col.name)}({params_str}): void {{\n')
+                slug_entity.write(f'        $this->{table_col.name} = ${table_col.name};\n')
+                slug_entity.write(f'    }}\n\n')
+
+            slug_entity.write(f'    public function getCreatedAt(): string {{\n')
+            slug_entity.write(f'        return $this->created_at;\n')
+            slug_entity.write(f'    }}\n\n')
+
+            slug_entity.write(f'    public function setCreatedAt(string $created_at): void {{\n')
+            slug_entity.write(f'        $this->created_at = $created_at;\n')
+            slug_entity.write(f'    }}\n\n')
+
+            slug_entity.write(f'    public function getUpdatedAt(): string {{\n')
+            slug_entity.write(f'        return $this->updated_at;\n')
+            slug_entity.write(f'    }}\n\n')
+
+            slug_entity.write(f'    public function setUpdatedAt(string $updated_at): void {{\n')
+            slug_entity.write(f'        $this->updated_at = $updated_at;\n')
+            slug_entity.write(f'    }}\n}}\n')
+
+    def create_schema(self):
+        with open(f'{PROJECT_ROOT}/app/database/schema/{self.slug}TableSchema.php', 'w+') as slug_schema:
+            slug_schema.write('<?php\n\n')
+            slug_schema.write(f'class {self.slug}TableSchema extends TableSchema {{\n\n')
+
+            slug_schema.write(f'    const ID = "id";\n')
+            slug_schema.write(f'    const UID = "uid";\n')
+            for table_col in self.table_cols:
+                table_col = TableColumn(table_col)
+                slug_schema.write(f'    const {table_col.name.upper()} = "{table_col.name}";\n')
+            slug_schema.write(f'    const CREATED_AT = "created_at";\n')
+            slug_schema.write(f'    const UPDATED_AT = "updated_at";\n\n')
+
+            slug_schema.write(f'    public function __construct() {{ parent::__construct({self.slug}Entity::TABLE_NAME); }}\n\n')
+
+            slug_schema.write('    public function getBlueprint(): string {\n')
+            slug_schema.write('        return "CREATE TABLE IF NOT EXISTS " . $this->getTableName() . "(\n')
+            slug_schema.write('            " . self::ID . " INT AUTO_INCREMENT PRIMARY KEY NOT NULL,\n')
+            slug_schema.write('            " . self::UID . " VARCHAR(50) NOT NULL,\n')
+
+            for table_col in self.table_cols:
+                table_col = TableColumn(table_col)
+                slug_schema.write(f'            " . self::{table_col.name.upper()} . " ')
+                if table_col.get_type() is bool or table_col.get_type() is int:
+                    slug_schema.write('INT')
+                else:
+                    slug_schema.write(f'VARCHAR({table_col.length})')
+                if not table_col.nullable:
+                    slug_schema.write(' NOT NULL')
+                slug_schema.write(',\n')
+
+            slug_schema.write('            " . self::CREATED_AT . " VARCHAR(100) NOT NULL,\n')
+            slug_schema.write('            " . self::UPDATED_AT . " VARCHAR(100) NOT NULL\n')
+            slug_schema.write('        )";\n')
+            slug_schema.write('    }\n')
+            slug_schema.write('}\n')
+
+    def create_factory(self):
+        with open(f'{PROJECT_ROOT}/app/database/factories/{self.slug}Factory.php', 'w+') as slug_factory:
+            slug_factory.write('<?php\n\n\n')
+            slug_factory.write(f'class {self.slug}Factory {{\n')
+
+            table_cols_with_default_values = []
+            table_cols_without_default_values = []
+
+            for table_col in self.table_cols:
+                table_col = TableColumn(table_col)
+                if table_col.has_default_value:
+                    table_cols_with_default_values.append(table_col)
+                else:
+                    table_cols_without_default_values.append(table_col)
+
+            slug_factory.write(f'    /**\n')
+            slug_factory.write(f'     * @param string[]|null|false $result\n')
+            slug_factory.write(f'     * @return {self.slug}Entity\n')
+            slug_factory.write(f'     */\n')
+            slug_factory.write(f'    public static function mapFromDatabaseResult($result): {self.slug}Entity {{\n')
+            slug_factory.write(f'        $entity = new {self.slug}Entity(\n')
+            slug_factory.write(f'            $result[{self.slug}TableSchema::UID],\n')
+
+            params_str = ''
+
+            for table_col in table_cols_without_default_values:
+                main_getter_phrase = f'$result[{self.slug}TableSchema::{table_col.name.upper()}]'
+                if table_col.get_type() is bool:
+                    if table_col.nullable:
+                        params_str = f'{main_getter_phrase} === null ? null : ((int) {main_getter_phrase}) === 1'
+                    else:
+                        params_str = f'((int) {main_getter_phrase}) === 1'
+                    slug_factory.write(f'{" " * 12}{params_str},\n')
+                elif table_col.get_type() is float:
+                    if table_col.nullable:
+                        params_str = f'{main_getter_phrase} === null ? null : ((float) {main_getter_phrase})'
+                    else:
+                        params_str = f'(float) {main_getter_phrase}'
+                    slug_factory.write(f'{" " * 12}{params_str},\n')
+                elif table_col.get_type() is int:
+                    if table_col.nullable:
+                        params_str = f'{main_getter_phrase} === null ? null : ((int) {main_getter_phrase})'
+                    else:
+                        params_str = f'(int) {main_getter_phrase}'
+                    slug_factory.write(f'{" " * 12}{params_str},\n')
+                else:
+                    if table_col.nullable:
+                        params_str = f'{main_getter_phrase} === null ? null : {main_getter_phrase}'
+                    else:
+                        params_str = main_getter_phrase
+                    slug_factory.write(f'{" " * 12}{params_str},\n')
+
+            slug_factory.write(f'            $result[{self.slug}TableSchema::CREATED_AT],\n')
+            slug_factory.write(f'            $result[{self.slug}TableSchema::UPDATED_AT]\n')
+            slug_factory.write(f'        );\n')
+            slug_factory.write(f'        $entity->setId($result[{self.slug}TableSchema::ID]);\n')
+
+            for table_col in table_cols_with_default_values:
+                main_getter_phrase = f'$result[{self.slug}TableSchema::{table_col.name.upper()}]'
+                if table_col.get_type() is bool:
+                    if table_col.nullable:
+                        params_str = f'{main_getter_phrase} === null ? null : ((int) {main_getter_phrase}) === 1'
+                    else:
+                        params_str = f'((int) {main_getter_phrase}) === 1'
+                    slug_factory.write(f'{" " * 8}$entity->set{pascal_case(table_col.name)}({params_str});\n')
+                elif table_col.get_type() is float:
+                    if table_col.nullable:
+                        params_str = f'{main_getter_phrase} === null ? null : ((float) {main_getter_phrase})'
+                    else:
+                        params_str = f'(float) {main_getter_phrase}'
+                    slug_factory.write(f'{" " * 8}$entity->set{pascal_case(table_col.name)}({params_str});\n')
+                elif table_col.get_type() is int:
+                    if table_col.nullable:
+                        params_str = f'{main_getter_phrase} === null ? null : ((int) {main_getter_phrase})'
+                    else:
+                        params_str = f'(int) {main_getter_phrase}'
+                    slug_factory.write(f'{" " * 8}$entity->set{pascal_case(table_col.name)}({params_str});\n')
+                else:
+                    if table_col.nullable:
+                        params_str = f'{main_getter_phrase} === null ? null : {main_getter_phrase}'
+                    else:
+                        params_str = main_getter_phrase
+                    slug_factory.write(f'{" " * 8}$entity->set{pascal_case(table_col.name)}({params_str});\n')
+            slug_factory.write(f'{" " * 8}return $entity;\n')
+            slug_factory.write(f'    }}\n')
+            slug_factory.write('}\n')
+
+    def create_dao(self):
+        electro_gen_start_tag = '<***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>'
+        electro_gen_end_tag = '</***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>'
+
+        electro_dao_content = [
+            f'\n'
+            f'    public function __construct(mysqli $connection) {{ // {electro_gen_start_tag}\n',
+            f'        parent::__construct($connection);\n',
+            f'    }} // {electro_gen_end_tag}\n',
+            f'\n',
+            f'    public function insert{self.slug}({self.slug}Entity ${self.slug.lower()}Entity): ?{self.slug}Entity {{ // {electro_gen_start_tag}\n',
+            f'        $query = QueryBuilder::withQueryType(QueryType::INSERT)\n',
+            f'            ->withTableName({self.slug}Entity::TABLE_NAME)\n',
+            f'            ->columns([\n',
+            f'                {self.slug}TableSchema::UID,\n'
+        ]
+
+        for table_col in self.table_cols:
+            table_col = TableColumn(table_col)
+            electro_dao_content.append(f'                {self.slug}TableSchema::{table_col.name.upper()},\n')
+
+        electro_dao_content.append(f'                {self.slug}TableSchema::CREATED_AT,\n')
+        electro_dao_content.append(f'                {self.slug}TableSchema::UPDATED_AT\n')
+
+        electro_dao_content.append(f'            ])\n')
+        electro_dao_content.append(f'            ->values([\n')
+
+        electro_dao_content.append(f'{" " * 16}$this->escape_string(${self.slug.lower()}Entity->getUid()),\n')
+
+        for table_col in self.table_cols:
+            table_col = TableColumn(table_col)
+            if table_col.get_type() is bool:
+                values_getter_text = f'${self.slug.lower()}Entity->is{pascal_case(table_col.name)}()'
+                wrap_bool_getter_text = f'$this->wrapBool({values_getter_text})'
+                if table_col.nullable:
+                    electro_dao_content.append(f'{" " * 16}{values_getter_text} === null ? null : {wrap_bool_getter_text},\n')
+                else:
+                    electro_dao_content.append(f'{" " * 16}{wrap_bool_getter_text},\n')
+            else:
+                values_getter_text = f'${self.slug.lower()}Entity->get{pascal_case(table_col.name)}()'
+                escape_str_getter_text = f'$this->escape_string({values_getter_text})'
+                if table_col.nullable:
+                    electro_dao_content.append(f'{" " * 16}{values_getter_text} === null ? null : {escape_str_getter_text},\n')
+                else:
+                    electro_dao_content.append(f'{" " * 16}{escape_str_getter_text},\n')
+
+        electro_dao_content.append(f'{" " * 16}$this->escape_string(${self.slug.lower()}Entity->getCreatedAt()),\n')
+        electro_dao_content.append(f'{" " * 16}$this->escape_string(${self.slug.lower()}Entity->getUpdatedAt())\n')
+        electro_dao_content.append(f'{" " * 12}])\n')
+        electro_dao_content.append(f'{" " * 12}->generate();\n\n')
+
+        electro_dao_content.append(f'{" " * 8}$result = mysqli_query($this->getConnection(), $query);\n\n')
+
+        electro_dao_content.append(f'{" " * 8}if ($result) {{\n')
+        electro_dao_content.append(f'{" " * 12}return $this->get{self.slug}WithId($this->inserted_id());\n')
+        electro_dao_content.append(f'{" " * 8}}}\n')
+        electro_dao_content.append(f'{" " * 8}return null;\n')
+        electro_dao_content.append(f'{" " * 4}}} // {electro_gen_end_tag}\n\n')
+
+        electro_dao_content.append(f'    public function get{self.slug}WithId(string $id): ?{self.slug}Entity {{ // {electro_gen_start_tag}\n')
+        electro_dao_content.append(f'        $query = QueryBuilder::withQueryType(QueryType::SELECT)\n')
+        electro_dao_content.append(f'             ->withTableName({self.slug}Entity::TABLE_NAME)\n')
+        electro_dao_content.append(f'             ->columns([\'*\'])\n')
+        electro_dao_content.append(f'             ->whereParams([\n')
+        electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::ID, \'=\', $this->escape_string($id)]\n')
+        electro_dao_content.append(f'             ])\n')
+        electro_dao_content.append(f'             ->generate();\n\n')
+
+        electro_dao_content.append(f'{" " * 8}$result = mysqli_query($this->getConnection(), $query);\n\n')
+
+        electro_dao_content.append(f'{" " * 8}if ($result && $result->num_rows >= 1) {{\n')
+        electro_dao_content.append(f'{" " * 12}return {self.slug}Factory::mapFromDatabaseResult(mysqli_fetch_assoc($result));\n')
+        electro_dao_content.append(f'{" " * 8}}}\n')
+        electro_dao_content.append(f'{" " * 8}return null;\n')
+        electro_dao_content.append(f'{" " * 4}}} // {electro_gen_end_tag}\n\n')
+
+        electro_dao_content.append(f'    public function get{self.slug}WithUid(string $uid): ?{self.slug}Entity {{ // {electro_gen_start_tag}\n')
+        electro_dao_content.append(f'        $query = QueryBuilder::withQueryType(QueryType::SELECT)\n')
+        electro_dao_content.append(f'             ->withTableName({self.slug}Entity::TABLE_NAME)\n')
+        electro_dao_content.append(f'             ->columns([\'*\'])\n')
+        electro_dao_content.append(f'             ->whereParams([\n')
+        electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::UID, \'=\', $this->escape_string($uid)]\n')
+        electro_dao_content.append(f'             ])\n')
+        electro_dao_content.append(f'             ->generate();\n\n')
+
+        electro_dao_content.append(f'{" " * 8}$result = mysqli_query($this->getConnection(), $query);\n\n')
+
+        electro_dao_content.append(f'{" " * 8}if ($result && $result->num_rows >= 1) {{\n')
+        electro_dao_content.append(f'{" " * 12}return {self.slug}Factory::mapFromDatabaseResult(mysqli_fetch_assoc($result));\n')
+        electro_dao_content.append(f'{" " * 8}}}\n')
+        electro_dao_content.append(f'{" " * 8}return null;\n')
+        electro_dao_content.append(f'{" " * 4}}} // {electro_gen_end_tag}\n\n')
+
+        # custom_table_cols = []
+        # for table_col in self.table_cols:
+        #     if 'magician_' not in table_col:
+        #         custom_table_cols.append(table_col)
+
+        """ CREATING GETTERS """
+        # for table_cols_set in custom_table_cols:
+        #     table_cols_set = list(map(lambda c: TableColumn(c), table_cols_set))
+        #     getter_fun_name = ''.join(list(map(lambda c: pascal_case(c.name), table_cols_set)))
+        #     params_str = ''
+        #     for table_col in table_cols_set:
+        #         params_str = f"{params_str}{table_col.php_type} ${table_col.name}{', ' if table_col != table_cols_set[-1] else ''}"
+        #     electro_dao_content.append(f'    public function get{self.slug}sWith{getter_fun_name}({params_str}): array {{ // {electro_gen_start_tag}\n')
+        #     electro_dao_content.append(f'        $query = QueryBuilder::withQueryType(QueryType::SELECT)\n')
+        #     electro_dao_content.append(f'             ->withTableName({self.slug}Entity::TABLE_NAME)\n')
+        #     electro_dao_content.append(f'             ->columns([\'*\'])\n')
+        #     electro_dao_content.append(f'             ->whereParams([\n')
+        #
+        #     for table_col in table_cols_set:
+        #         main_getter_phrase = f'${table_col.name}'
+        #         if table_col.get_type() is bool:
+        #             if table_col.nullable:
+        #                 params_str = f'{main_getter_phrase} === null ? null : $this->wrapBool({main_getter_phrase})'
+        #             else:
+        #                 params_str = f'$this->wrapBool({main_getter_phrase})'
+        #             electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::{table_col.name.upper()}, \'=\', ({params_str})],\n')
+        #             if table_col != table_cols_set[-1]:
+        #                 electro_dao_content.append(f'{" " * 16}[\'AND\'],\n')
+        #         else:
+        #             if table_col.nullable:
+        #                 params_str = f'{main_getter_phrase} === null ? null : $this->escape_string({main_getter_phrase})'
+        #             else:
+        #                 params_str = f'$this->escape_string({main_getter_phrase})'
+        #             electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::{table_col.name.upper()}, \'=\', ({params_str})],\n')
+        #             if table_col != table_cols_set[-1]:
+        #                 electro_dao_content.append(f'{" " * 16}[\'AND\'],\n')
+        #
+        #     electro_dao_content.append(f'             ])\n')
+        #     electro_dao_content.append(f'             ->generate();\n\n')
+        #
+        #     electro_dao_content.append(f'{" " * 8}$result = mysqli_query($this->getConnection(), $query);\n\n')
+        #
+        #     electro_dao_content.append(f'{" " * 8}${self.slug.lower()}s = [];\n\n')
+        #
+        #     electro_dao_content.append(f'{" " * 8}while($row = mysqli_fetch_array($result)) {{\n')
+        #     electro_dao_content.append(f'{" " * 12}array_push(${self.slug.lower()}s, {self.slug}Factory::mapFromDatabaseResult($row));\n')
+        #     electro_dao_content.append(f'{" " * 8}}}\n')
+        #     electro_dao_content.append(f'{" " * 8}return ${self.slug.lower()}s;\n')
+        #     electro_dao_content.append(f'    }} // {electro_gen_end_tag}\n\n')
+
+        """ GETTER FOR ALL """
+        electro_dao_content.append(f'    public function getAll{self.slug}(): array {{ // {electro_gen_start_tag}\n')
+        electro_dao_content.append(f'        $query = QueryBuilder::withQueryType(QueryType::SELECT)\n')
+        electro_dao_content.append(f'             ->withTableName({self.slug}Entity::TABLE_NAME)\n')
+        electro_dao_content.append(f'             ->columns([\'*\'])\n')
+        electro_dao_content.append(f'             ->generate();\n\n')
+
+        electro_dao_content.append(f'{" " * 8}$result = mysqli_query($this->getConnection(), $query);\n\n')
+
+        electro_dao_content.append(f'{" " * 8}${self.slug.lower()}s = [];\n\n')
+
+        electro_dao_content.append(f'{" " * 8}if ($result) {{\n')
+        electro_dao_content.append(f'{" " * 12}while($row = mysqli_fetch_assoc($result)) {{\n')
+        electro_dao_content.append(f'{" " * 16}array_push(${self.slug.lower()}s, {self.slug}Factory::mapFromDatabaseResult($row));\n')
+        electro_dao_content.append(f'{" " * 12}}}\n')
+        electro_dao_content.append(f'{" " * 8}}}\n')
+        electro_dao_content.append(f'{" " * 8}return ${self.slug.lower()}s;\n')
+        electro_dao_content.append(f'    }} // {electro_gen_end_tag}\n\n')
+
+        """ GENERATING UPDATERS """
+        electro_dao_content.append(f'    public function update{self.slug}({self.slug}Entity ${self.slug.lower()}Entity): ?{self.slug}Entity {{ // {electro_gen_start_tag}\n')
+        electro_dao_content.append(f'        $query = QueryBuilder::withQueryType(QueryType::UPDATE)\n')
+        electro_dao_content.append(f'            ->withTableName({self.slug}Entity::TABLE_NAME)\n')
+        electro_dao_content.append(f'            ->updateParams([\n')
+
+        for table_col in self.table_cols:
+            table_col = TableColumn(table_col)
+            if table_col.get_type() is bool:
+                values_getter_text = f'${self.slug.lower()}Entity->is{pascal_case(table_col.name)}()'
+                wrap_bool_getter_text = f'$this->wrapBool({values_getter_text})'
+                if table_col.nullable:
+                    params_str = f'{values_getter_text} === null ? null : {wrap_bool_getter_text}'
+                else:
+                    params_str = f'{wrap_bool_getter_text}'
+            else:
+                values_getter_text = f'${self.slug.lower()}Entity->get{pascal_case(table_col.name)}()'
+                escape_str_getter_text = f'$this->escape_string({values_getter_text})'
+                if table_col.nullable:
+                    params_str = f'{values_getter_text} === null ? null : {escape_str_getter_text}'
+                else:
+                    params_str = escape_str_getter_text
+            electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::{table_col.name.upper()}, {params_str}],\n')
+
+        params_str = f'$this->escape_string(${self.slug.lower()}Entity->getCreatedAt())'
+        electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::CREATED_AT, {params_str}],\n')
+        params_str = f'$this->escape_string(${self.slug.lower()}Entity->getUpdatedAt())'
+        electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::UPDATED_AT, {params_str}]\n')
+        electro_dao_content.append(f'{" " * 12}])\n')
+        electro_dao_content.append(f'{" " * 12}->whereParams([\n')
+        params_str = f'$this->escape_string(${self.slug.lower()}Entity->getId())'
+        electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::ID, \'=\', {params_str}]\n')
+        electro_dao_content.append(f'{" " * 12}])\n')
+        electro_dao_content.append(f'{" " * 12}->generate();\n\n')
+
+        electro_dao_content.append(f'{" " * 8}$result = mysqli_query($this->getConnection(), $query);\n\n')
+
+        electro_dao_content.append(f'{" " * 8}if ($result) {{\n')
+        electro_dao_content.append(f'{" " * 12}return $this->get{self.slug}WithId(${self.slug.lower()}Entity->getId());\n')
+        electro_dao_content.append(f'{" " * 8}}}\n')
+        electro_dao_content.append(f'{" " * 8}return null;\n')
+        electro_dao_content.append(f'{" " * 4}}} // {electro_gen_end_tag}\n\n')
+
+        """ GENERATING DELETE METHODS """
+        electro_dao_content.append(f'    public function delete{self.slug}({self.slug}Entity ${self.slug.lower()}Entity): bool {{ // {electro_gen_start_tag}\n')
+        electro_dao_content.append(f'        $query = QueryBuilder::withQueryType(QueryType::DELETE)\n')
+        electro_dao_content.append(f'            ->withTableName({self.slug}Entity::TABLE_NAME)\n')
+        electro_dao_content.append(f'            ->whereParams([\n')
+        params_str = f'$this->escape_string(${self.slug.lower()}Entity->getId())'
+        electro_dao_content.append(f'{" " * 16}[{self.slug}TableSchema::ID, \'=\', {params_str}]\n')
+        electro_dao_content.append(f'{" " * 12}])\n')
+        electro_dao_content.append(f'{" " * 12}->generate();\n\n')
+
+        electro_dao_content.append(f'{" " * 8}return (bool) mysqli_query($this->getConnection(), $query);\n')
+        electro_dao_content.append(f'{" " * 4}}} // {electro_gen_end_tag}\n\n')
+
+        electro_dao_content.append(f'    public function deleteAll{self.slug}s(): bool {{ // {electro_gen_start_tag}\n')
+        electro_dao_content.append(f'        $query = QueryBuilder::withQueryType(QueryType::DELETE)\n')
+        electro_dao_content.append(f'            ->withTableName({self.slug}Entity::TABLE_NAME)\n')
+        electro_dao_content.append(f'            ->generate();\n\n')
+
+        electro_dao_content.append(f'{" " * 8}return (bool) mysqli_query($this->getConnection(), $query);\n')
+        electro_dao_content.append(f'{" " * 4}}} // {electro_gen_end_tag}\n\n')
+
+        user_defined_dao_content = []
+
+        if os.path.exists(f'{PROJECT_ROOT}/app/database/dao/{self.slug}Dao.php'):
+            with open(f'{PROJECT_ROOT}/app/database/dao/{self.slug}Dao.php', 'r') as slug_dao:
+                dao_lock_mode = None
+                for lin in slug_dao.readlines()[4:]:
+                    if dao_lock_mode == electro_gen_start_tag:  # LOCKED
+                        if electro_gen_end_tag in lin:
+                            dao_lock_mode = None
+                    else:  # Not Locked
+                        if electro_gen_start_tag in lin:
+                            dao_lock_mode = electro_gen_start_tag
+                        else:
+                            user_defined_dao_content.append(lin)
+
+        user_defined_dao_content_functions = []
+
+        is_function_started = False
+        user_defined_dao_content_function = []
+        while len(user_defined_dao_content) != 0:
+            lin = user_defined_dao_content[0]
+            user_defined_dao_content.pop(0)
+            if lin[:19] == '    public function' and not is_function_started:
+                is_function_started = True
+                user_defined_dao_content_function = [lin]
+                continue
+            if lin[:5] == '    }':
+                is_function_started = False
+                user_defined_dao_content_function.append(lin)
+                user_defined_dao_content_functions.append(user_defined_dao_content_function)
+                continue
+            if is_function_started:
+                user_defined_dao_content_function.append(lin)
+
+        for user_defined_dao_function in user_defined_dao_content_functions:
+            for lin in user_defined_dao_function:
+                electro_dao_content.append(lin)
+            electro_dao_content.append('\n')
+
+        with open(f'{PROJECT_ROOT}/app/database/dao/{self.slug}Dao.php', 'w+') as slug_dao:
+            slug_dao.write('<?php\n\n')
+            slug_dao.write(f'class {self.slug}Dao extends TableDao {{\n\n')
+
+            has_end = False
+            for lin in electro_dao_content:
+                slug_dao.write(lin)
+                if '}\n' == lin:
+                    has_end = True
+            if not has_end:
+                slug_dao.write('}\n')
+
+
+class EnvironmentGenerator:
+
+    def __init__(self, data_dirs):
+        self.data_dirs = data_dirs
+
+    def build_environment(self):
+        with open(f'{PROJECT_ROOT}/app/core/Environment.php', 'w+') as environment_file:
+            environment_file.write('<?php\n\n')
+            environment_file.write('trait Environment {\n\n')
+
+            environment_file_stub = [
+                '    private function getServerNameWithAvailableProtocol(): string {',
+                '        $server_name = $_SERVER["SERVER_NAME"];',
+                "        return 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $server_name;",
+                '    }\n',
+
+                '    private function getServerUrlUptoDataDir(): string {',
+                '        return $this->getServerNameWithAvailableProtocol() . "/data";',
+                '    }\n',
+
+                '    public function getDataDirectoryPath(): string {',
+                '        return Manifest::getAppSystemRoot() . "/data";',
+                '    }\n'
+            ]
+
+            for lin in environment_file_stub:
+                environment_file.write(f'{lin}\n')
+
+            for data_dir in self.data_dirs:
+                environment_file.write('    /**\n')
+                environment_file.write(f'     * <{data_dir[0]}>\n')
+                environment_file.write(f'     */\n')
+                environment_file.write(f'    public function get{data_dir[0]}DirPath(): string {{\n')
+                environment_file.write(f'        return $this->getDataDirectoryPath() . \'{data_dir[1]}\';\n')
+                environment_file.write(f'    }}\n\n')
+                environment_file.write(f'    public function createLinkFor{data_dir[0]}(string $file_name): string {{\n')
+                environment_file.write(f'        return $this->getServerUrlUptoDataDir() . "{data_dir[1]}/" . $file_name;\n')
+                environment_file.write(f'    }}\n')
+                environment_file.write(f'    /** ----------------- </{data_dir[0]}> */\n\n')
+
+            environment_file.write('}\n')
+
+
+class EeveeConfig:
+
+    def __init__(self):
+        self.config_file = f'{PROJECT_ROOT}/eevee_config.json'
+
+        if not os.path.exists(self.config_file):
+            sys.exit(err_text("EEVEE CONFIG FILE COULDN'T BE FOUND!"))
+
+        with open(self.config_file, 'r') as eevee_config:
+            self.config = json.loads(eevee_config.read())
+
+    def get_production_db_hostname(self):
+        return self.config['__production_database__']['__hostname__']
+
+    def get_production_db_username(self):
+        return self.config['__production_database__']['__username__']
+
+    def get_production_db_password(self):
+        return self.config['__production_database__']['__password__']
+
+    def get_production_db_name(self):
+        return self.config['__production_database__']['__database__']
+
+    def get_local_db_hostname(self):
+        return self.config['__local_database__']['__hostname__']
+
+    def get_local_db_username(self):
+        return self.config['__local_database__']['__username__']
+
+    def get_local_db_password(self):
+        return self.config['__local_database__']['__password__']
+
+    def get_local_db_name(self):
+        return self.config['__local_database__']['__database__']
+
+    def get_ftp_hostname(self):
+        return self.config['__ftp_config__']['__hostname__']
+
+    def get_ftp_username(self):
+        return self.config['__ftp_config__']['__username__']
+
+    def get_ftp_password(self):
+        return self.config['__ftp_config__']['__password__']
+
+    def get_ssh_hostname(self):
+        return self.config['__ssh_config__']['__hostname__']
+
+    def get_ssh_username(self):
+        return self.config['__ssh_config__']['__username__']
+
+    def get_ssh_password(self):
+        return self.config['__ssh_config__']['__password__']
+
+    def get_ssh_port(self):
+        return self.config['__ssh_config__']['__port__']
+
+    def get_env_list(self):
+        return self.config['__env__']
+
+    def get_data_dirs(self):
+        return self.config['__data_dirs__']
+
+    def get_android_app_config(self):
+        return self.config['__android_app_config__']
+
+    def get_android_app_package_names(self):
+        return self.config['__android_app_config__']['__package_names__']
+
+    def get_tink_master_key(self):
+        return self.config['__android_app_config__']['__tink_master_key__']
+
+    def get_android_tink_secret_key(self):
+        return self.config['__android_app_config__']['__secret_key__']
+
+    def get_server_base_url(self):
+        return self.config['__android_app_config__']['__server_base_url__']
+
+EEVEE_CONFIG = EeveeConfig()
+
+VERSION = '1.0'
+args = sys.argv[1:]
+
+if len(args) == 0:
+    sys.exit(err_text("No arguments were provided, use '-h' for help."))
+
+help_manual = [
+    (('-v', 'Displays current version of eevee'), './eevee -v'),
+    (('-h', 'Shows this help menu'), './eevee -h'),
+    (('-u', 'Updates eevee to latest version'), './eevee -u'),
+    (('--create-agent', 'Creates an Agent'), './eevee --create-agent RegisterUser'),
+    (('--create-table', 'Create a Table'), './eevee --create-table User'),
+    (('--serve', 'Serves App Locally on specified PORT'), './eevee --serve 8000'),
+    (
+        (
+            '--build',
+            'Creates Production Build, tarball is default, other formats can be set.'
+        ),
+        './eevee --build --tar --zip --rar --7z'
+    ),
+    (
+        (
+            '--ftp',
+            'Establishes ftp connection with config defined in eevee_config.json'
+        ),
+        './eevee --ftp'
+    ),
+    (
+        (
+            '--ssh',
+            'Establishes ssh connection with config defined in eevee_config.json'
+        ),
+        './eevee --ssh'
+    )
+]
+
+if args[0] not in list(map(lambda t: t[0][0], help_manual)):
+    sys.exit(err_text(f"Invalid Argument {args[0]}"))
+
+""" Displaying Help Menu """
+if args[0] == '-h':
+    print(tabulate(
+        list(map(lambda x: [x[0][0], f'\x1b[7;37;37m$\x1b[0m\x1b[2;37;44m {x[1]} \x1b[0m', x[0][1]], help_manual)),
+        headers=['Arguments', 'Usage', 'Description']
+    ))
+
+""" Displaying Version """
+if args[0] == '-v':
+    print(f"Current Eevee Version is: \x1b[3;30;43m {VERSION} \x1b[0m")
+
+
+# Creates Compressed Production Build,
+# TarBall is default, can be changed to build in zip, rar and 7z
+class CreateCompressedBuild:
+
+    def __init__(self, tar=True, extension='.tar.gz', build_type='TarBall'):
+        self.tar = tar
+        self.extension = extension
+        self.build_type = build_type
+        self.skip = False
+
+    def create(self):
+        if os.path.exists(f"{PROJECT_ROOT}/SERVER{self.extension}"):
+            while True:
+                choice = input(f"SERVER{self.extension} production build exists. overwrite? [y/N]: ")
+                if choice not in ['y', 'Y', 'N', 'n', '']:
+                    print(err_text("Wrong Input!"))
+                    continue
+                if choice in ['y', 'Y']:
+                    os.system(f'rm "{PROJECT_ROOT}/SERVER{self.extension}"')
+                else:
+                    self.skip = True
+                break
+        if self.skip:
+            print(f"Skipped {self.build_type} Build.")
+        else:
+            print(f"Creating {self.build_type} Build...")
+            if self.tar:
+                os.system(f'cd "{PROJECT_ROOT}/build" && tar -czf ../SERVER{self.extension} *')
+            else:
+                if self.extension == '.rar':
+                    os.system(f'cd "{PROJECT_ROOT}/build" && rar a ../SERVER{self.extension} *')
+                else:
+                    os.system(f'cd "{PROJECT_ROOT}/build" && 7z a ../SERVER{self.extension} *')
+            print(f"{self.build_type} Build Success: {PROJECT_ROOT}/SERVER{self.extension}")
+
+
+class RouteCreator:
+
+    def __init__(self, agent):
+        self.agent = agent
+        self.route = ''
+
+    # Provides a name with case change, PascalCase to snake_case
+    # RegisterUser.php => register_user.php
+    def get_route_name(self):
+        self.route = ''
+        for i in range(len(self.agent)):
+            if self.agent[i].isupper() and i > 0:
+                self.route = self.route + '_{}'.format(self.agent[i])
+            else:
+                self.route = self.route + self.agent[i]
+        return self.route.lower()
+
+    # Writes Content to Route File,
+    # destination param = destination directory, where route will be created
+    def create_route(self, destination):
+        with open(f'{destination}/{self.get_route_name()}', 'w+') as routeFile:
+            routeFile.write('<?php require "app/Manifest.php";\n')
+            routeFile.write('(new {}())->launch();'.format(self.agent[:-4]))
+
+
+class DatabaseClassBuilder:
+
+    def __init__(self, hostname, username, password, db_name, db_path):
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.db_name = db_name
+        self.db_path = db_path
+        self.entities = list(map(  # UserEntity.php -> User  (Removing Suffixes)
+            lambda e: e[:-10],
+            os.listdir(f'{PROJECT_ROOT}/app/database/entities')
+        ))
+
+    def build_db(self):
+        with open(self.db_path, 'w+') as db:
+            db.write('<?php\n\n')
+            db.write('class AppDB {\n')
+            db.write(f'{" " * 4}const HOSTNAME = "{self.hostname}";\n')
+            db.write(f'{" " * 4}const USERNAME = "{self.username}";\n')
+            db.write(f'{" " * 4}const PASSWORD = "{self.password}";\n')
+            db.write(f'{" " * 4}const DATABASE = "{self.db_name}";\n\n')
+            db.write(f'{" " * 4}private mysqli $conn;\n\n')
+
+            for model in self.entities:
+                db.write(f'{" " * 4}private {model}Dao ${model[0].lower() + model[1:]}Dao;\n')
+
+            db.write(f'\n{" " * 4}function __construct() {{\n')
+            db.write(f'{" " * 8}$temp_conn = mysqli_connect(self::HOSTNAME, self::USERNAME, self::PASSWORD, '
+                     f'self::DATABASE);\n\n')
+
+            db.write(f'{" " * 8}if (!$temp_conn) {{\n')
+            db.write('{}die("{}");\n'.format(' ' * 12, "Couldn't Connect to DB!"))
+            db.write(f'{" " * 8}}}\n\n')
+
+            db.write(f'{" " * 8}$this->conn = $temp_conn;\n\n')
+
+            for model in self.entities:
+                db.write(f'{" " * 8}mysqli_query($this->conn, (new {model}TableSchema())->getBlueprint());'
+                         f' // Creates {model} Table\n')
+                db.write(f'{" " * 8}$this->{model[0].lower() + model[1:]}Dao = new {model}Dao($this->conn);'
+                         f' // Initialize {model} Dao\n\n')
+
+            db.write(f'{" " * 4}}}\n\n')
+
+            db.write(f'{" " * 4}public function getConnection(): mysqli {{\n')
+            db.write(f'{" " * 8}return $this->conn;\n')
+            db.write(f'{" " * 4}}}\n\n')
+
+            db.write(f'{" " * 4}public function closeConnection() {{\n')
+            db.write(f'{" " * 8}$this->conn->close();\n')
+            db.write(f'{" " * 4}}}\n\n')
+
+            for model in self.entities:
+                db.write(f'{" " * 4}public function get{model}Dao(): {model}Dao {{\n')
+                db.write(f'{" " * 8}return $this->{model[0].lower() + model[1:]}Dao;\n')
+                end_line = '\n' if model != self.entities[-1] else ''
+                db.write(f'{" " * 4}}}\n{end_line}')
+
+            db.write('}\n\n')
+
+
+class ManifestBuilder:
+
+    def __init__(self, manifest_path):
+        self.manifest_path = manifest_path
+        self.env_list = EEVEE_CONFIG.get_env_list()
+        self.entities = list(map(  # UserEntity.php -> User  (Removing Suffixes)
+            lambda e: e[:-10],
+            os.listdir(f'{PROJECT_ROOT}/app/database/entities')
+        ))
+
+    def build_manifest(self):
+        with open(self.manifest_path, 'w+') as mf:
+            mf.write('<?php\n\n')
+            mf.write('class Manifest {\n')
+
+            for env_item in self.env_list:
+                if isinstance(env_item[1], str):  # value is of type string
+                    mf.write(f'{" " * 4}const {env_item[0][2:-2].upper()} = "{env_item[1]}";\n')
+                elif isinstance(env_item[1], bool):  # value is of type BOOL
+                    mf.write(f'{" " * 4}const {env_item[0][2:-2].upper()} = {"true" if env_item[1] else "false"};\n')
+                elif isinstance(env_item[1], int) or isinstance(env_item[1], float):  # value is of type int or float
+                    mf.write(f'{" " * 4}const {env_item[0][2:-2].upper()} = {env_item[1]};\n')
+
+            mf.write(f'\n{" " * 4}private const COMPOSER_VENDOR = [\n')
+            mf.write(f'{" " * 8}\'dir_path\' => \'../\',\n')
+            mf.write(f'{" " * 8}\'vendor\' => [\n')
+            mf.write(f'{" " * 12}\'autoload\'\n')
+            mf.write(f'{" " * 8}]\n')
+            mf.write(f'{" " * 4}];\n\n')
+
+            # LIBS START
+            mf.write(f'{" " * 4}private const LIBS = [\n')
+            mf.write(f'{" " * 8}\'dir_path\' => \'./libs\',\n')
+
+            mf.write(f'{" " * 8}\'magician\' => [\n')
+            for magician_lib in ['MagicianSpell::class', 'MagicianPasswordSpell::class', 'Magician::class']:
+                mf.write(f'{" " * 12}{magician_lib},\n')
+            mf.write(f'{" " * 8}],\n')
+
+            mf.write(f'{" " * 8}\'query_builder\' => [\n')
+            query_builder_libs = [
+                'QueryType::class',
+                'Query::class',
+                'InsertQuery::class',
+                'WhereApplicableQuery::class',
+                'SelectQuery::class',
+                'UpdateQuery::class',
+                'DeleteQuery::class',
+                'QueryBuilder::class'
+            ]
+            for query_builder_lib in query_builder_libs:
+                mf.write(f'{" " * 12}{query_builder_lib},\n')
+            mf.write(f'{" " * 8}],\n')
+
+            mf.write(f'{" " * 8}\'db_libs\' => [\n')
+            for table_lib in ['TableDao::class', 'TableSchema::class']:
+                mf.write(f'{" " * 12}{table_lib},\n')
+            mf.write(f'{" " * 8}],\n')
+
+            mf.write(f'{" " * 4}];\n\n')
+            # LIBS END
+
+            """ DATABASE Entities Schema Factories Dao START """
+            mf.write(f'{" " * 4}private const DATABASE = [\n')
+            mf.write(f'{" " * 8}\'dir_path\' => \'./database\',\n')
+
+            mf.write(f'{" " * 8}\'entities\' => [\n')
+            for entity in self.entities:
+                mf.write(f'{" " * 12}{entity}Entity::class,\n')
+            mf.write(f'{" " * 8}],\n')
+
+            mf.write(f'{" " * 8}\'schema\' => [\n')
+            for entity in self.entities:
+                mf.write(f'{" " * 12}{entity}TableSchema::class,\n')
+            mf.write(f'{" " * 8}],\n')
+
+            mf.write(f'{" " * 8}\'factories\' => [\n')
+            for entity in self.entities:
+                mf.write(f'{" " * 12}{entity}Factory::class,\n')
+            mf.write(f'{" " * 8}],\n')
+
+            mf.write(f'{" " * 8}\'dao\' => [\n')
+            for entity in self.entities:
+                mf.write(f'{" " * 12}{entity}Dao::class,\n')
+            mf.write(f'{" " * 8}],\n')
+
+            mf.write(f'{" " * 8}\'db\' => [\n')
+            mf.write(f'{" " * 12}AppDB::class\n')
+            mf.write(f'{" " * 8}],\n')
+            mf.write(f'{" " * 4}];\n\n')
+            # Database Entities Schema Factories Dao END -
+
+            """ CORE START """
+            mf.write(f'{" " * 4}private const CORE = [\n')
+            mf.write(f'{" " * 8}\'dir_path\' => \'./\',\n')
+            mf.write(f'{" " * 8}\'core\' => [\n')
+            for core_item in ['Environment::class', 'ElectroResponse::class', 'ElectroApi::class']:
+                mf.write(f'{" " * 12}{core_item},\n')
+            mf.write(f'{" " * 8}],\n')
+            mf.write(f'{" " * 4}];\n\n')
+            # CORE END
+
+            """ UTILS START """
+            mf.write(f'{" " * 4}private const UTILS = [\n')
+            mf.write(f'{" " * 8}\'dir_path\' => \'./utils\',\n')
+            mf.write(f'{" " * 8}\'image_uploader\' => [\n')
+            mf.write(f'{" " * 12}ImageUploader::class,\n')
+            mf.write(f'{" " * 8}],\n')
+            mf.write(f'{" " * 4}];\n\n')
+            # UTILS END
+
+            """ MODELS START """
+            mf.write(f'{" " * 4}private const MODELS = [\n')
+            mf.write(f'{" " * 8}\'dir_path\' => \'./\',\n')
+            mf.write(f'{" " * 8}\'models\' => [\n')
+            models = list(map(
+                lambda m: m.split('.php')[0],
+                os.listdir(f'{PROJECT_ROOT}/app/models')
+            ))
+            for model in models:
+                mf.write(f'{" " * 12}{model}::class,\n')
+            mf.write(f'{" " * 8}]\n')
+            mf.write(f'{" " * 4}];\n\n')
+            # Models END
+
+            """ AGENTS START """
+            mf.write(f'{" " * 4}private const AGENTS = [\n')
+            mf.write(f'{" " * 8}\'dir_path\' => \'./\',\n')
+            mf.write(f'{" " * 8}\'agents\' => [\n')
+            api_agents = list(map(
+                lambda a: a.split('.php')[0],
+                os.listdir(f'{PROJECT_ROOT}/app/agents')
+            ))
+            for api_agent in api_agents:
+                mf.write(f'{" " * 12}{api_agent}::class,\n')
+            mf.write(f'{" " * 8}]\n')
+            mf.write(f'{" " * 4}];\n\n')
+            # Agents END
+
+            manifest_content = [
+                '    public static function getAppSystemRoot(): string {',
+                '        return substr(self::devisePath(\'../\'), 0, -1);',
+                '    }\n',
+
+                '    public static function devisePath($path): string {',
+                '        $root_path = explode(\'/\', __DIR__);\n',
+
+                '        if (substr($path, 0, 2) === \'./\') {',
+                '            $path = substr($path, 2);',
+                '        } else {',
+                '            while (substr($path, 0, 3) === \'../\') {',
+                '                $path = substr($path, 3);',
+                '                array_pop($root_path);',
+                '            }',
+                '        }\n',
+
+                '        return implode(\'/\', $root_path) . \'/\' . $path;',
+                '    }\n',
+
+                '    private function requireItems(array $package) {',
+                '        foreach ($package as $key => $value) {',
+                '            if ($key !== \'dir_path\') {',
+                '                foreach ($value as $module) {',
+                '                    $dir_path = $package[\'dir_path\'];',
+                '                    $path = $dir_path;',
+                '                    if ($dir_path !== \'./\' && $dir_path !== \'../\') {',
+                '                        $path = $path . \'/\';',
+                '                    }',
+                '                    $path = $path . $key . \'/\' . $module . \'.php\';',
+                '                    require self::devisePath($path) . \'\';',
+                '                }',
+                '            }',
+                '        }',
+                '    }\n',
+
+                '    private function loadRequirements() {',
+                '        self::requireItems(self::COMPOSER_VENDOR);',
+                '        self::requireItems(self::LIBS);',
+                '        self::requireItems(self::DATABASE);',
+                '        self::requireItems(self::CORE);',
+                '        self::requireItems(self::UTILS);',
+                '        self::requireItems(self::MODELS);',
+                '        self::requireItems(self::AGENTS);',
+                '    }\n',
+
+                '    private function __construct() {',
+                '        $this->loadRequirements();',
+                '    }\n',
+
+                '    public static function create() {',
+                '        new Manifest();',
+                '    }',
+                '}'
+            ]
+            for manifest_line in manifest_content:
+                mf.write(f'{manifest_line}\n')
+            mf.write('\nManifest::create();\n')
+
+
+class ProductionBuild:
+
+    def __init__(self):
+        if len(args) > 1:
+            if len(args[1:]) > 4:
+                sys.exit(err_text('Invalid number of build parameters, Maximum 4 are accepted.'))
+            for arg in args[1:]:
+                if arg not in ['--tar', '--zip', '--rar', '--7z']:
+                    sys.exit(err_text(f"Invalid build argument: {arg}"))
+
+        if os.path.exists(f'{PROJECT_ROOT}/build'):
+            os.system(f'rm -rf "{PROJECT_ROOT}/build"')
+            os.mkdir(f'{PROJECT_ROOT}/build')
+
+        self.ignore = [
+            '.idea',
+            '.gitignore',
+            'data',
+            '.git',
+            'eevee',
+            'build',
+            'composer.json',
+            'composer.lock',
+            'eevee_config.json',
+            'SERVER.zip',
+            'SERVER.tar.gz',
+            'SERVER.7z',
+            'SERVER.rar'
+        ]
+
+        for item in os.listdir(PROJECT_ROOT):
+            if item not in self.ignore:
+                if os.path.isdir(f'{PROJECT_ROOT}/{item}'):
+                    copytree(f'{PROJECT_ROOT}/{item}', f'{PROJECT_ROOT}/build/{item}')
+                else:
+                    copyfile(f'{PROJECT_ROOT}/{item}', f'{PROJECT_ROOT}/build/{item}')
+
+        os.system(f'rm -rf "{PROJECT_ROOT}/build/app/android"')
+        os.system(f'rm -rf "{PROJECT_ROOT}/build/app/database/design"')
+        os.system(f'rm -rf "{PROJECT_ROOT}/build/app/database/structures"')
+
+        DatabaseClassBuilder(
+            EEVEE_CONFIG.get_production_db_hostname(),
+            EEVEE_CONFIG.get_production_db_username(),
+            EEVEE_CONFIG.get_production_db_password(),
+            EEVEE_CONFIG.get_production_db_name(),
+            f'{PROJECT_ROOT}/build/app/database/db/AppDB.php'
+        ).build_db()
+
+        os.system(f'rm "{PROJECT_ROOT}/build/app/libs/query_builder/QueryBuilderUsage.txt"')
+        os.system(f'rm "{PROJECT_ROOT}/build/app/utils/image_uploader/ImageUploaderUsage.txt"')
+
+        """ Writing Routes content in route files under build directory """
+        for agent in os.listdir(f'{PROJECT_ROOT}/app/agents'):
+            RouteCreator(agent).create_route(f'{PROJECT_ROOT}/build')
+
+        if len(args) == 1 or '--tar' in args:
+            CreateCompressedBuild().create()  # Creates TarBall Build (default)
+
+        if len(args) > 1:
+            for arg in args[1:]:
+                if arg == '--zip':
+                    CreateCompressedBuild(tar=False, extension='.zip', build_type='ZIP').create()
+                if arg == '--rar':
+                    CreateCompressedBuild(tar=False, extension='.rar', build_type='RAR').create()
+                if arg == '--7z':
+                    CreateCompressedBuild(tar=False, extension='.7z', build_type='7-ZIP').create()
+
+        os.system(f'rm -rf "{PROJECT_ROOT}/build"')
+
+
+# Creating Production Build
+if args[0] == '--build':
+    ManifestBuilder(f'{PROJECT_ROOT}/app/Manifest.php').build_manifest()
+    ProductionBuild()
+
+# Serving Locally
+if args[0] == '--serve':
+    if len(args) == 1:
+        sys.exit(err_text('Missing PORT Argument'))
+    if len(args[1]) < 4:
+        sys.exit(err_text('Please specify a valid port: Minimum length is 4'))
+    if not args[1].isdigit():
+        sys.exit(err_text(f'Invalid PORT: {args[1]}'))
+
+    for tsf in os.listdir(f'{PROJECT_ROOT}/app/database/structures/'):
+        TableSchemaEntitiesDaoFactoriesCreator(tsf).create_entity()
+        TableSchemaEntitiesDaoFactoriesCreator(tsf).create_schema()
+        TableSchemaEntitiesDaoFactoriesCreator(tsf).create_factory()
+        TableSchemaEntitiesDaoFactoriesCreator(tsf).create_dao()
+
+    EnvironmentGenerator(EEVEE_CONFIG.get_data_dirs()).build_environment()
+
+    DatabaseClassBuilder(
+        EEVEE_CONFIG.get_local_db_hostname(),
+        EEVEE_CONFIG.get_local_db_username(),
+        EEVEE_CONFIG.get_local_db_password(),
+        EEVEE_CONFIG.get_local_db_name(),
+        f'{PROJECT_ROOT}/app/database/db/AppDB.php'
+    ).build_db()
+
+    ManifestBuilder(f'{PROJECT_ROOT}/app/Manifest.php').build_manifest()
+
+    """ Writing Routes content in route files """
+    agents = os.listdir(f'{PROJECT_ROOT}/app/agents')
+    for agent in agents:
+        RouteCreator(agent).create_route(PROJECT_ROOT)  # Creates route file in project root directory
+
+    for app_pkg_name in EEVEE_CONFIG.get_android_app_package_names():
+        AndroidSdkBuilder(app_pkg_name).create_core()
+
+    if len(EEVEE_CONFIG.get_android_app_package_names()) > 0:
+        for app_pkg_name in EEVEE_CONFIG.get_android_app_package_names()[1:]:
+            AndroidSdkBuilder(app_pkg_name).make_from_first_pkg_service_response_validator(EEVEE_CONFIG.get_android_app_package_names()[0])
+
+    os.system(f'php -S localhost:{args[1]} -t {PROJECT_ROOT}/')
+
+    for route in list(map(lambda x: RouteCreator(x).get_route_name(), agents)):
+        os.remove(f'{PROJECT_ROOT}/{route}')
+    print("Bye Bye!")
+
+if args[0] == '--create-agent':
+    if len(args) == 1:
+        sys.exit(err_text('No agent name specified'))
+    if len(args) != 2:
+        sys.exit(err_text('Invalid Arguments'))
+    if not args[1][0].isupper():  # if first letter of agent name is not upper
+        sys.exit(err_text('Incorrect agent name, it always starts with capital letter.'))
+
+    if os.path.exists(f'{PROJECT_ROOT}/app/agents/{args[1]}.php'):
+        sys.exit(err_text(f'{args[1]} Agent Already Exist!'))
+
+    with open(f'{PROJECT_ROOT}/app/agents/{args[1]}.php', 'w+') as my_agent:
+        my_agent.write('<?php\n\n')
+        my_agent.write(f'class {args[1]} extends ElectroApi {{\n\n')
+        my_agent.write(f'    protected function onDevise() {{\n')
+        my_agent.write(f'        $this->resSendOK([\n')
+        my_agent.write(f'            \'eevee\' => \'Hi i\\\'m {args[1]} agent.\'\n')
+        my_agent.write(f'        ]);\n')
+        my_agent.write(f'    }}\n')
+        my_agent.write(f'}}\n')
+    ManifestBuilder(f'{PROJECT_ROOT}/app/Manifest.php').build_manifest()
+
+    for app_pkg_name in EEVEE_CONFIG.get_android_app_package_names():
+        AndroidSdkBuilder(app_pkg_name).create_service_response_validator(args[1])
+
+    print(f'{args[1]} agent created successfully!')
+
+# Creating Table
+if args[0] == '--create-table':
+    if len(args) == 1:
+        sys.exit(err_text('No table name specified'))
+    if len(args) != 2:
+        sys.exit(err_text('Invalid Arguments'))
+    if not args[1][0].isupper():  # if first letter of agent name is not upper
+        sys.exit(err_text('Incorrect table name, it always starts with capital letter.'))
+
+    if os.path.exists(f'{PROJECT_ROOT}/app/database/structures/{args[1]}.json'):
+        sys.exit(err_text(f'{args[1]} Table Already Exist!'))
+
+    with open(f'{PROJECT_ROOT}/app/database/structures/{args[1]}.json', 'w+') as table_structure_file:
+        table_structure_file.write('{\n')
+        table_structure_file.write(f'    "__table_name__": "{args[1].lower()}s",\n')
+        table_structure_file.write('    "__cols__": [\n')
+        table_structure_file.write('        [ "first_name", "" , 50 ],\n')
+        table_structure_file.write('        [ "last_name", "" , 50 ],\n')
+        table_structure_file.write('        [ "username", "" , 50 ],\n')
+        table_structure_file.write('        [ "email", "" , 50 ],\n')
+        table_structure_file.write('        [ "magician_cipher", "" , 150 ],\n')
+        table_structure_file.write('        [ "magician_iv", "" , 50 ],\n')
+        table_structure_file.write('        [ "magician_key", "" , 50 ],\n')
+        table_structure_file.write('        [ "magician_abracadabra", "" , 40 ],\n')
+        table_structure_file.write('        [ "fcm_token?", "" , 170 , null],\n')
+        table_structure_file.write('        [ "account_verified" , true , null, false],\n')
+        table_structure_file.write('        [ "blocked" , true , null, false],\n')
+        table_structure_file.write('        [ "posts", 1 , null, 0],\n')
+        table_structure_file.write('        [ "rating", 5.0, 170 , 0.0]\n')
+        table_structure_file.write('    ]\n')
+        table_structure_file.write('} \n')
+    print(f'{args[1]} structure has been created successfully!')
+
+# Creating Production Build
+if args[0] == '--ftp':
+    print("Connecting To Ftp Client")
+    print(f'FTP USERNAME: {EEVEE_CONFIG.get_ftp_username()}')
+    print(f'FTP PASSWORD: {EEVEE_CONFIG.get_ftp_password()}')
+    os.system(f'ftp {EEVEE_CONFIG.get_ftp_hostname()}')
+
+
+class SshConnection:
+
+    def __init__(self):
+        self.hostname = EEVEE_CONFIG.get_ssh_hostname()
+        self.username = EEVEE_CONFIG.get_ssh_username()
+        self.password = EEVEE_CONFIG.get_ssh_password()
+        self.port = EEVEE_CONFIG.get_ssh_port()
+
+    def connect(self):
+        print("Launching SSH Session")
+        print(f'SSH PASSWORD: {self.password}')
+        os.system(f'ssh {self.username}@{self.hostname} -p {self.port}')
+
+
+# Launch SSH Connection
+if args[0] == '--ssh':
+    SshConnection().connect()
+
+# todo: Add checks for proper validation of user schema, if wrong provided.
