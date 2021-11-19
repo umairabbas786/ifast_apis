@@ -23,13 +23,6 @@ if which('7z') is None:
     else:
         sys.exit(err_text("7z not found in path, please install it."))
 
-if which('rar') is None:
-    if distro.name() == 'Manjaro Linux':
-        print("RAR is not installed, Enter Your Password to install it.")
-        os.system('sudo pacman -Sy && sudo pamac install rar')
-    else:
-        sys.exit(err_text("rar not found in path, please install it."))
-
 if which('php') is None:
     sys.exit(err_text('php interpreter not found in path'))
 
@@ -1311,7 +1304,7 @@ class CreateCompressedBuild:
         else:
             print(f"Creating {self.build_type} Build...")
             if self.tar:
-                os.system(f'cd "{PROJECT_ROOT}/build" && tar -czf ../SERVER{self.extension} *')
+                os.system(f'cd "{PROJECT_ROOT}/build" && tar -cvzf ../SERVER{self.extension} *')
             else:
                 if self.extension == '.rar':
                     os.system(f'cd "{PROJECT_ROOT}/build" && rar a ../SERVER{self.extension} *')

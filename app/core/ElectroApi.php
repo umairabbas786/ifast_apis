@@ -141,7 +141,7 @@ abstract class ElectroApi {
         $this->onSetDefaultContentType();
         $this->onAssemble();
         $this->onDevise();
-        if ($this->appDB !== null) {
+        if (isset($this->appDB)) {
             $this->appDB->closeConnection();
         }
     }

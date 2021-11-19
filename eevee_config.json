@@ -3,13 +3,13 @@
         "__hostname__": "localhost",
         "__username__": "root",
         "__password__": "",
-        "__database__": "electro_db"
+        "__database__": "ifast"
     },
     "__production_database__": {
         "__hostname__": "localhost",
-        "__username__": "eevee",
-        "__password__": "eevee",
-        "__database__": "electro_db"
+        "__username__": "appcash_umair",
+        "__password__": "Devils@dvocate007",
+        "__database__": "appcash_ifast"
     },
     "__ftp_config__": {
         "__hostname__": "hello.com",
@@ -25,7 +25,7 @@
     "__env__": [
         [
             "__api_key__",
-            "hi,-its-eevee. I can do wonderful things in api creation."
+            "ifast is secured now."
         ],
         [
             "__debug_mode__",
@@ -43,21 +43,15 @@
     "__data_dirs__": [
         [
             "UserAvatarImage",
-            "/images/user_avatars"
+            "/images/users"
         ],
         [
-            "ProductImage",
-            "/images/products"
-        ],
-        [
-            "StatusVideo",
-            "/videos/user_statuses"
+            "DriverImage",
+            "/images/drivers"
         ]
     ],
     "__android_app_config__": {
         "__package_names__": [
-            "com.electrodragon.i_fast_api",
-            "com.electrodragon.i_fast_api_admin"
         ],
         "__tink_master_key__": "7b227072696d6172794b65794964223a323032323437373531382c226b6579223a5b7b226b657944617461223a7b227479706555726c223a22747970652e676f6f676c65617069732e636f6d2f676f6f676c652e63727970746f2e74696e6b2e41657347636d4b6579222c2276616c7565223a2247694472595674792f43773566764157476c683372487369553553697769685654534941526a4d4e77336b4c38773d3d222c226b65794d6174657269616c54797065223a2253594d4d4554524943227d2c22737461747573223a22454e41424c4544222c226b65794964223a323032323437373531382c226f757470757450726566697854797065223a2254494e4b227d5d7d",
         "__secret_key__": "19XNGLNVWP8UMHT9JNZ0OQXQPJNM6IF7JBJGEXB6Y82RG6YW4R6GPZHZPXPB7Q4OT873A4",
