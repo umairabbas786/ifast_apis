@@ -159,11 +159,11 @@ class AdsDao extends TableDao {
         return $adss;
     }
 
-    public function deleteAdsWithDriverId(string $driver_id): bool {
+    public function deleteAdsWithPostId(string $post_id): bool {
         $query = QueryBuilder::withQueryType(QueryType::DELETE)
             ->withTableName(AdsEntity::TABLE_NAME)
             ->whereParams([
-                [AdsTableSchema::DRIVER_ID, '=', $this->escape_string($driver_id)]
+                [AdsTableSchema::ID, '=', $this->escape_string($post_id)]
             ])
             ->generate();
 

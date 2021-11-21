@@ -2,16 +2,16 @@
 
 class DeletePostedAds extends ElectroApi {
 
-    const DRIVER_ID = "driver_id";
+    const POST_ID = "post_id";
 
     protected function onAssemble() {
-        if (!isset($_POST[self::DRIVER_ID])) {
-            $this->killAsBadRequestWithMissingParamException(self::DRIVER_ID);
+        if (!isset($_POST[self::POST_ID])) {
+            $this->killAsBadRequestWithMissingParamException(self::POST_ID);
         }
     }
 
     protected function onDevise() {
-        $ad_delete = $this->getAppDB()->getAdsDao()->deleteAdsWithDriverId($_POST[self::DRIVER_ID]);
+        $ad_delete = $this->getAppDB()->getAdsDao()->deleteAdsWithPostId($_POST[self::POST_ID]);
         if($ad_delete === false){
             $this->killAsFailure([
                 'unable_to_delete_ad' => true
