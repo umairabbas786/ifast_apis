@@ -1,0 +1,11 @@
+{
+    "__table_name__": "ads",
+    "__cols__": [
+        [ "driver_id", "" , 50 ],
+        [ "driver_name", "" , 50 ],
+        [ "location", "" , 50 ],
+        [ "availability_status" , true , null, false],
+        [ "vehicle_type", "" , 150 ],
+        [ "status" , true , null, false]
+    ]
+} 

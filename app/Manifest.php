@@ -39,15 +39,19 @@ class Manifest {
     private const DATABASE = [
         'dir_path' => './database',
         'entities' => [
+            AdsEntity::class,
             DriverEntity::class,
         ],
         'schema' => [
+            AdsTableSchema::class,
             DriverTableSchema::class,
         ],
         'factories' => [
+            AdsFactory::class,
             DriverFactory::class,
         ],
         'dao' => [
+            AdsDao::class,
             DriverDao::class,
         ],
         'db' => [
@@ -82,6 +86,8 @@ class Manifest {
         'agents' => [
             EmailVerifyDriver::class,
             LoginDriver::class,
+            PostAnAds::class,
+            PostedAds::class,
             RegisterDriver::class,
         ]
     ];
