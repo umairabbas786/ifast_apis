@@ -139,4 +139,21 @@ class AdsDao extends TableDao {
         return (bool) mysqli_query($this->getConnection(), $query);
     } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
 
+    public function getAdsWithDriverID(string $driver_id): ?AdsEntity { // <***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(AdsEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [AdsTableSchema::DRIVER_ID, '=', $this->escape_string($driver_id)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+
+        if ($result && $result->num_rows >= 1) {
+            return AdsFactory::mapFromDatabaseResult(mysqli_fetch_assoc($result));
+        }
+        return null;
+    } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
+
 }

@@ -23,7 +23,7 @@ class LoginDriver extends ElectroApi {
             ]);
         }
 
-        if ($driver->isStatus() !== true) {
+        if ($driver->isEmailVerified() !== true) {
             $this->killAsFailure([
                 'driver_not_verified_by_admin' => true
             ]);

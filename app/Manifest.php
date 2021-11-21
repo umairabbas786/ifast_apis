@@ -84,11 +84,13 @@ class Manifest {
     private const AGENTS = [
         'dir_path' => './',
         'agents' => [
+            DeletePostedAds::class,
             EmailVerifyDriver::class,
             LoginDriver::class,
             PostAnAds::class,
             PostedAds::class,
             RegisterDriver::class,
+            UpdatePostAdStatus::class,
         ]
     ];
 
