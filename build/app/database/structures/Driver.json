@@ -1,0 +1,15 @@
+{
+    "__table_name__": "drivers",
+    "__cols__": [
+        [ "profile_picture", "" , 150 ],
+        [ "full_name", "" , 50 ],
+        [ "email", "" , 50 ],
+        [ "date_of_birth", "" , 50 ],
+        [ "country", "" , 50 ],
+        [ "password", "" , 50 ],
+        [ "proof", "" , 150 ],
+        [ "email_code", "" , 50 ],
+        [ "email_verified", true , null, false],
+        [ "status" , true , null, false]
+    ]
+}
