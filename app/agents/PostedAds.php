@@ -14,9 +14,15 @@ class PostedAds extends ElectroApi {
         $posts = $this->getAppDB()->getAdsDao()
             ->getAdsWithDriverID($_POST[self::DRIVER_ID]);
 
+        if(count($posts) === 0) {
+            $this->killAsFailure([
+                'no_data_found' => true
+            ]);
+        }
+
         $ad = [];
 
-        /** @var AdsEntity $ads */
+        /** @var AdsEntity $adds */
         foreach ($posts as $ads) {
             array_push($ad, [
                 AdsTableSchema::ID => $ads->getId(),
@@ -24,7 +30,6 @@ class PostedAds extends ElectroApi {
                 AdsTableSchema::LOCATION => $ads->getLocation(),
                 AdsTableSchema::AVAILABILITY_STATUS => $ads->isAvailabilityStatus(),
                 AdsTableSchema::VEHICLE_TYPE => $ads->getVehicleType(),
-                AdsTableSchema::STATUS => $ads->isStatus(),
                 AdsTableSchema::CREATED_AT => $ads->getCreatedAt()
             ]);
         }

@@ -11,10 +11,7 @@ class DeletePostedAds extends ElectroApi {
     }
 
     protected function onDevise() {
-        $posts = $this->getAppDB()->getAdsDao()
-            ->getAdsWithDriverID($_POST[self::DRIVER_ID]);
-
-        $ad_delete = $this->getAppDB()->getAdsDao()->deleteAds($posts);
+        $ad_delete = $this->getAppDB()->getAdsDao()->deleteAdsWithDriverId($_POST[self::DRIVER_ID]);
         if($ad_delete === false){
             $this->killAsFailure([
                 'unable_to_delete_ad' => true
@@ -22,7 +19,7 @@ class DeletePostedAds extends ElectroApi {
         }
 
         $this->resSendOK([
-            'ad_deleted' => true 
+            'ad_deleted' => true
         ]);
     }
 }

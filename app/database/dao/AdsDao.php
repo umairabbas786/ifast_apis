@@ -139,7 +139,7 @@ class AdsDao extends TableDao {
         return (bool) mysqli_query($this->getConnection(), $query);
     } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
 
-    public function getAdsWithDriverID(string $driver_id): ?AdsEntity { // <***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
+    public function getAdsWithDriverID(string $driver_id): array {
         $query = QueryBuilder::withQueryType(QueryType::SELECT)
             ->withTableName(AdsEntity::TABLE_NAME)
             ->columns(['*'])
@@ -149,11 +149,25 @@ class AdsDao extends TableDao {
             ->generate();
 
         $result = mysqli_query($this->getConnection(), $query);
+        $adss = [];
 
-        if ($result && $result->num_rows >= 1) {
-            return AdsFactory::mapFromDatabaseResult(mysqli_fetch_assoc($result));
+        if ($result) {
+            while($row = mysqli_fetch_assoc($result)) {
+                array_push($adss, AdsFactory::mapFromDatabaseResult($row));
+            }
         }
-        return null;
-    } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
+        return $adss;
+    }
+
+    public function deleteAdsWithDriverId(string $driver_id): bool {
+        $query = QueryBuilder::withQueryType(QueryType::DELETE)
+            ->withTableName(AdsEntity::TABLE_NAME)
+            ->whereParams([
+                [AdsTableSchema::DRIVER_ID, '=', $this->escape_string($driver_id)]
+            ])
+            ->generate();
+
+        return (bool) mysqli_query($this->getConnection(), $query);
+    }
 
 }
