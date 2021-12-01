@@ -1,0 +1,17 @@
+{
+    "__table_name__": "delivery",
+    "__cols__": [
+        [ "customer_id", "" , 50 ],
+        [ "driver_id", "" , 50 ],
+        [ "item_names", "" , 500 ],
+        [ "description", "" , 50 ],
+        [ "pickup_location", "" , 150 ],
+        [ "delivery_destination", "" , 150 ],
+        [ "date_of_delivery", "" , 50 ],
+        [ "pickup_time", "" , 50 ],
+        [ "vehicle_type", "" , 170 ],
+        [ "items_weight", "" , 170 ],
+        [ "instructions", "" , 170 ],
+        [ "status" , true , null, false]
+    ]
+} 

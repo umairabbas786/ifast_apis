@@ -40,18 +40,22 @@ class Manifest {
         'dir_path' => './database',
         'entities' => [
             AdsEntity::class,
+            DelieveryEntity::class,
             DriverEntity::class,
         ],
         'schema' => [
             AdsTableSchema::class,
+            DelieveryTableSchema::class,
             DriverTableSchema::class,
         ],
         'factories' => [
             AdsFactory::class,
+            DelieveryFactory::class,
             DriverFactory::class,
         ],
         'dao' => [
             AdsDao::class,
+            DelieveryDao::class,
             DriverDao::class,
         ],
         'db' => [
@@ -88,6 +92,7 @@ class Manifest {
             DeletePostedAds::class,
             EmailVerifyDriver::class,
             LoginDriver::class,
+            MakeDeliveryCustomer::class,
             PostAnAds::class,
             PostedAds::class,
             RegisterDriver::class,
