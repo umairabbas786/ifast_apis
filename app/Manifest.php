@@ -40,21 +40,25 @@ class Manifest {
         'dir_path' => './database',
         'entities' => [
             AdsEntity::class,
+            ConfirmDeliveryEntity::class,
             DelieveryEntity::class,
             DriverEntity::class,
         ],
         'schema' => [
             AdsTableSchema::class,
+            ConfirmDeliveryTableSchema::class,
             DelieveryTableSchema::class,
             DriverTableSchema::class,
         ],
         'factories' => [
             AdsFactory::class,
+            ConfirmDeliveryFactory::class,
             DelieveryFactory::class,
             DriverFactory::class,
         ],
         'dao' => [
             AdsDao::class,
+            ConfirmDeliveryDao::class,
             DelieveryDao::class,
             DriverDao::class,
         ],
@@ -88,6 +92,8 @@ class Manifest {
     private const AGENTS = [
         'dir_path' => './',
         'agents' => [
+            AcceptDeliveryRequest::class,
+            ConfirmDeliveryRequest::class,
             DeleteAccountDriver::class,
             DeletePostedAds::class,
             EmailVerifyDriver::class,
@@ -96,6 +102,8 @@ class Manifest {
             PostAnAds::class,
             PostedAds::class,
             RegisterDriver::class,
+            RejectDeliveryRequest::class,
+            ShowDeliveryRequests::class,
             UpdatePostAdStatus::class,
         ]
     ];

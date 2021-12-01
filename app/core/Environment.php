@@ -39,4 +39,16 @@ trait Environment {
     }
     /** ----------------- </DriverImage> */
 
+    /**
+     * <DeliveryProofImage>
+     */
+    public function getDeliveryProofImageDirPath(): string {
+        return $this->getDataDirectoryPath() . '/images/proof';
+    }
+
+    public function createLinkForDeliveryProofImage(string $file_name): string {
+        return $this->getServerUrlUptoDataDir() . "/images/proof/" . $file_name;
+    }
+    /** ----------------- </DeliveryProofImage> */
+
 }

@@ -23,6 +23,7 @@ class DelieveryDao extends TableDao {
                 DelieveryTableSchema::VEHICLE_TYPE,
                 DelieveryTableSchema::ITEMS_WEIGHT,
                 DelieveryTableSchema::INSTRUCTIONS,
+                DelieveryTableSchema::PENDING,
                 DelieveryTableSchema::STATUS,
                 DelieveryTableSchema::CREATED_AT,
                 DelieveryTableSchema::UPDATED_AT
@@ -40,6 +41,7 @@ class DelieveryDao extends TableDao {
                 $this->escape_string($delieveryEntity->getVehicleType()),
                 $this->escape_string($delieveryEntity->getItemsWeight()),
                 $this->escape_string($delieveryEntity->getInstructions()),
+                $this->wrapBool($delieveryEntity->isPending()),
                 $this->wrapBool($delieveryEntity->isStatus()),
                 $this->escape_string($delieveryEntity->getCreatedAt()),
                 $this->escape_string($delieveryEntity->getUpdatedAt())
@@ -121,6 +123,7 @@ class DelieveryDao extends TableDao {
                 [DelieveryTableSchema::VEHICLE_TYPE, $this->escape_string($delieveryEntity->getVehicleType())],
                 [DelieveryTableSchema::ITEMS_WEIGHT, $this->escape_string($delieveryEntity->getItemsWeight())],
                 [DelieveryTableSchema::INSTRUCTIONS, $this->escape_string($delieveryEntity->getInstructions())],
+                [DelieveryTableSchema::PENDING, $this->wrapBool($delieveryEntity->isPending())],
                 [DelieveryTableSchema::STATUS, $this->wrapBool($delieveryEntity->isStatus())],
                 [DelieveryTableSchema::CREATED_AT, $this->escape_string($delieveryEntity->getCreatedAt())],
                 [DelieveryTableSchema::UPDATED_AT, $this->escape_string($delieveryEntity->getUpdatedAt())]
@@ -156,5 +159,42 @@ class DelieveryDao extends TableDao {
 
         return (bool) mysqli_query($this->getConnection(), $query);
     } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
+
+    public function getDeliveriesWithDriverID(string $driver_id): array {
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(DelieveryEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [DelieveryTableSchema::DRIVER_ID, '=', $this->escape_string($driver_id)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+        $deliveries = [];
+
+        if ($result) {
+            while($row = mysqli_fetch_assoc($result)) {
+                array_push($deliveries, DelieveryFactory::mapFromDatabaseResult($row));
+            }
+        }
+        return $deliveries;
+    }
+
+    public function getDelieveryWithDriverIdEntity(string $id): ?DelieveryEntity {
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(DelieveryEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [DelieveryTableSchema::DRIVER_ID, '=', $this->escape_string($id)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+
+        if ($result && $result->num_rows >= 1) {
+            return DelieveryFactory::mapFromDatabaseResult(mysqli_fetch_assoc($result));
+        }
+        return null;
+    }
 
 }

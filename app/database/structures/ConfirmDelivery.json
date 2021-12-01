@@ -1,0 +1,15 @@
+{
+    "__table_name__": "confirm_delivery",
+    "__cols__": [
+        [ "delivery_id", "" , 50 ],
+        [ "customer_id", "" , 50 ],
+        [ "driver_id", "" , 50 ],
+        [ "location", "" , 150 ],
+        [ "number_plate", "" , 150 ],
+        [ "face", "" , 150 ],
+        [ "before_items", "" , 150 ],
+        [ "after_items", "" , 150 ],
+        [ "confirmed", "" , 5],
+        [ "status" , true , null, false]
+    ]
+} 

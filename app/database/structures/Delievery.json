@@ -12,6 +12,7 @@
         [ "vehicle_type", "" , 170 ],
         [ "items_weight", "" , 170 ],
         [ "instructions", "" , 170 ],
+        [ "pending" , true , null, false],
         [ "status" , true , null, false]
     ]
 } 

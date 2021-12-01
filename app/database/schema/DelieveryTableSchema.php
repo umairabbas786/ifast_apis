@@ -15,6 +15,7 @@ class DelieveryTableSchema extends TableSchema {
     const VEHICLE_TYPE = "vehicle_type";
     const ITEMS_WEIGHT = "items_weight";
     const INSTRUCTIONS = "instructions";
+    const PENDING = "pending";
     const STATUS = "status";
     const CREATED_AT = "created_at";
     const UPDATED_AT = "updated_at";
@@ -36,6 +37,7 @@ class DelieveryTableSchema extends TableSchema {
             " . self::VEHICLE_TYPE . " VARCHAR(170) NOT NULL,
             " . self::ITEMS_WEIGHT . " VARCHAR(170) NOT NULL,
             " . self::INSTRUCTIONS . " VARCHAR(170) NOT NULL,
+            " . self::PENDING . " INT NOT NULL,
             " . self::STATUS . " INT NOT NULL,
             " . self::CREATED_AT . " VARCHAR(100) NOT NULL,
             " . self::UPDATED_AT . " VARCHAR(100) NOT NULL

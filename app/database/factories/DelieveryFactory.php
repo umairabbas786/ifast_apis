@@ -24,6 +24,7 @@ class DelieveryFactory {
             $result[DelieveryTableSchema::UPDATED_AT]
         );
         $entity->setId($result[DelieveryTableSchema::ID]);
+        $entity->setPending(((int) $result[DelieveryTableSchema::PENDING]) === 1);
         $entity->setStatus(((int) $result[DelieveryTableSchema::STATUS]) === 1);
         return $entity;
     }

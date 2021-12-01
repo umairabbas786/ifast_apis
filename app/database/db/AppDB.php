@@ -9,6 +9,7 @@ class AppDB {
     private mysqli $conn;
 
     private AdsDao $adsDao;
+    private ConfirmDeliveryDao $confirmDeliveryDao;
     private DelieveryDao $delieveryDao;
     private DriverDao $driverDao;
 
@@ -23,6 +24,9 @@ class AppDB {
 
         mysqli_query($this->conn, (new AdsTableSchema())->getBlueprint()); // Creates Ads Table
         $this->adsDao = new AdsDao($this->conn); // Initialize Ads Dao
+
+        mysqli_query($this->conn, (new ConfirmDeliveryTableSchema())->getBlueprint()); // Creates ConfirmDelivery Table
+        $this->confirmDeliveryDao = new ConfirmDeliveryDao($this->conn); // Initialize ConfirmDelivery Dao
 
         mysqli_query($this->conn, (new DelieveryTableSchema())->getBlueprint()); // Creates Delievery Table
         $this->delieveryDao = new DelieveryDao($this->conn); // Initialize Delievery Dao
@@ -42,6 +46,10 @@ class AppDB {
 
     public function getAdsDao(): AdsDao {
         return $this->adsDao;
+    }
+
+    public function getConfirmDeliveryDao(): ConfirmDeliveryDao {
+        return $this->confirmDeliveryDao;
     }
 
     public function getDelieveryDao(): DelieveryDao {
