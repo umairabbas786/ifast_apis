@@ -108,7 +108,7 @@ class ConfirmDeliveryRequest extends ElectroApi {
             $facePictureGeneratedName,
             $beforeItemsGeneratedName,
             $afterItemsGeneratedName,
-            0,
+            1,
             $registration_time,
             $registration_time,
             false

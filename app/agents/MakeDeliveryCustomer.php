@@ -56,9 +56,9 @@ class MakeDeliveryCustomer extends ElectroApi {
             $_POST[self::VEHICLE_TYPE],
             $_POST[self::ITEMS_WEIGHT],
             $_POST[self::INSTRUCTIONS],
+            0,
             $registration_time,
             $registration_time,
-            false,
             false
         );
 
@@ -84,7 +84,7 @@ class MakeDeliveryCustomer extends ElectroApi {
                 DelieveryTableSchema::VEHICLE_TYPE => $Delivery->getVehicleType(),
                 DelieveryTableSchema::ITEMS_WEIGHT => $Delivery->getItemsWeight(),
                 DelieveryTableSchema::INSTRUCTIONS => $Delivery->getInstructions(),
-                DelieveryTableSchema::PENDING => $Delivery->isPending(),
+                DelieveryTableSchema::PENDING => $Delivery->getPending(),
                 DelieveryTableSchema::STATUS => $Delivery->isStatus(),
                 DelieveryTableSchema::CREATED_AT => $Delivery->getCreatedAt(),
                 DelieveryTableSchema::UPDATED_AT => $Delivery->getUpdatedAt()

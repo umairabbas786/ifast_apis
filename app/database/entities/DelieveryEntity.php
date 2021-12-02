@@ -16,12 +16,12 @@ class DelieveryEntity {
     private string $vehicle_type;
     private string $items_weight;
     private string $instructions;
-    private bool $pending;
+    private string $pending;
     private bool $status;
     private string $created_at;
     private string $updated_at;
 
-    public function __construct(string $uid, string $customer_id, string $driver_id, string $item_names, string $description, string $pickup_location, string $delivery_destination, string $date_of_delivery, string $pickup_time, string $vehicle_type, string $items_weight, string $instructions,  string $created_at, string $updated_at, bool $pending = false, bool $status = false) {
+    public function __construct(string $uid, string $customer_id, string $driver_id, string $item_names, string $description, string $pickup_location, string $delivery_destination, string $date_of_delivery, string $pickup_time, string $vehicle_type, string $items_weight, string $instructions, string $pending,  string $created_at, string $updated_at, bool $status = false) {
         $this->uid = $uid;
         $this->customer_id = $customer_id;
         $this->driver_id = $driver_id;
@@ -144,11 +144,11 @@ class DelieveryEntity {
         $this->instructions = $instructions;
     }
 
-    public function isPending(): bool {
+    public function getPending(): string {
         return $this->pending;
     }
 
-    public function setPending(bool $pending = false): void {
+    public function setPending(string $pending): void {
         $this->pending = $pending;
     }
 

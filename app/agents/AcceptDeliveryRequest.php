@@ -2,22 +2,27 @@
 
 class AcceptDeliveryRequest extends ElectroApi {
 
-    const DRIVER_ID = "driver_id";
+    const ID = "id";
 
     protected function onAssemble() {
-        if (!isset($_POST[self::DRIVER_ID])) {
-            $this->killAsBadRequestWithMissingParamException(self::DRIVER_ID);
+        if (!isset($_POST[self::ID])) {
+            $this->killAsBadRequestWithMissingParamException(self::ID);
         }
     }
 
     protected function onDevise() {
-        $accept_delivery = $this->getAppDB()->getDelieveryDao()->getDelieveryWithDriverIdEntity($_POST[self::DRIVER_ID]);
-        if($accept_delivery->isPending() == false){
-            $accept_delivery->setPending(true);
+        $accept_delivery = $this->getAppDB()->getDelieveryDao()->getDelieveryWithId($_POST[self::ID]);
+        $accept_delivery->setPending(1);
+        $accept_delivery = $this->getAppDB()->getDelieveryDao()->updateDelievery($accept_delivery);
+
+        if($accept_delivery === null){
+            $this->killAsFailure([
+                'unable_to_update_pending_status' => true
+            ]);
         }
 
         $this->resSendOK([
-            'delivery_accepted' => $accept_delivery->isPending()
+            'delivery_accepted' => true
         ]);
     }
 }

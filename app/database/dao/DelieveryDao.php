@@ -41,7 +41,7 @@ class DelieveryDao extends TableDao {
                 $this->escape_string($delieveryEntity->getVehicleType()),
                 $this->escape_string($delieveryEntity->getItemsWeight()),
                 $this->escape_string($delieveryEntity->getInstructions()),
-                $this->wrapBool($delieveryEntity->isPending()),
+                $this->escape_string($delieveryEntity->getPending()),
                 $this->wrapBool($delieveryEntity->isStatus()),
                 $this->escape_string($delieveryEntity->getCreatedAt()),
                 $this->escape_string($delieveryEntity->getUpdatedAt())
@@ -123,7 +123,7 @@ class DelieveryDao extends TableDao {
                 [DelieveryTableSchema::VEHICLE_TYPE, $this->escape_string($delieveryEntity->getVehicleType())],
                 [DelieveryTableSchema::ITEMS_WEIGHT, $this->escape_string($delieveryEntity->getItemsWeight())],
                 [DelieveryTableSchema::INSTRUCTIONS, $this->escape_string($delieveryEntity->getInstructions())],
-                [DelieveryTableSchema::PENDING, $this->wrapBool($delieveryEntity->isPending())],
+                [DelieveryTableSchema::PENDING, $this->escape_string($delieveryEntity->getPending())],
                 [DelieveryTableSchema::STATUS, $this->wrapBool($delieveryEntity->isStatus())],
                 [DelieveryTableSchema::CREATED_AT, $this->escape_string($delieveryEntity->getCreatedAt())],
                 [DelieveryTableSchema::UPDATED_AT, $this->escape_string($delieveryEntity->getUpdatedAt())]
@@ -178,23 +178,6 @@ class DelieveryDao extends TableDao {
             }
         }
         return $deliveries;
-    }
-
-    public function getDelieveryWithDriverIdEntity(string $id): ?DelieveryEntity {
-        $query = QueryBuilder::withQueryType(QueryType::SELECT)
-            ->withTableName(DelieveryEntity::TABLE_NAME)
-            ->columns(['*'])
-            ->whereParams([
-                [DelieveryTableSchema::DRIVER_ID, '=', $this->escape_string($id)]
-            ])
-            ->generate();
-
-        $result = mysqli_query($this->getConnection(), $query);
-
-        if ($result && $result->num_rows >= 1) {
-            return DelieveryFactory::mapFromDatabaseResult(mysqli_fetch_assoc($result));
-        }
-        return null;
     }
 
 }

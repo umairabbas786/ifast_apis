@@ -20,11 +20,11 @@ class DelieveryFactory {
             $result[DelieveryTableSchema::VEHICLE_TYPE],
             $result[DelieveryTableSchema::ITEMS_WEIGHT],
             $result[DelieveryTableSchema::INSTRUCTIONS],
+            $result[DelieveryTableSchema::PENDING],
             $result[DelieveryTableSchema::CREATED_AT],
             $result[DelieveryTableSchema::UPDATED_AT]
         );
         $entity->setId($result[DelieveryTableSchema::ID]);
-        $entity->setPending(((int) $result[DelieveryTableSchema::PENDING]) === 1);
         $entity->setStatus(((int) $result[DelieveryTableSchema::STATUS]) === 1);
         return $entity;
     }

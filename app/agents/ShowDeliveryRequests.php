@@ -35,6 +35,7 @@ class ShowDeliveryRequests extends ElectroApi {
                 DelieveryTableSchema::VEHICLE_TYPE => $Delivery->getVehicleType(),
                 DelieveryTableSchema::ITEMS_WEIGHT => $Delivery->getItemsWeight(),
                 DelieveryTableSchema::INSTRUCTIONS => $Delivery->getInstructions(),
+                DelieveryTableSchema::PENDING => $Delivery->getPending(),
                 DelieveryTableSchema::CREATED_AT => $Delivery->getCreatedAt(),
                 DelieveryTableSchema::UPDATED_AT => $Delivery->getUpdatedAt()
             ]);

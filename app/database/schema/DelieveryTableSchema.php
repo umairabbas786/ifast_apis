@@ -37,7 +37,7 @@ class DelieveryTableSchema extends TableSchema {
             " . self::VEHICLE_TYPE . " VARCHAR(170) NOT NULL,
             " . self::ITEMS_WEIGHT . " VARCHAR(170) NOT NULL,
             " . self::INSTRUCTIONS . " VARCHAR(170) NOT NULL,
-            " . self::PENDING . " INT NOT NULL,
+            " . self::PENDING . " VARCHAR(5) NOT NULL,
             " . self::STATUS . " INT NOT NULL,
             " . self::CREATED_AT . " VARCHAR(100) NOT NULL,
             " . self::UPDATED_AT . " VARCHAR(100) NOT NULL

@@ -2,22 +2,27 @@
 
 class RejectDeliveryRequest extends ElectroApi {
 
-    const DRIVER_ID = "driver_id";
+    const ID = "id";
 
     protected function onAssemble() {
-        if (!isset($_POST[self::DRIVER_ID])) {
-            $this->killAsBadRequestWithMissingParamException(self::DRIVER_ID);
+        if (!isset($_POST[self::ID])) {
+            $this->killAsBadRequestWithMissingParamException(self::ID);
         }
     }
 
     protected function onDevise() {
-        $accept_delivery = $this->getAppDB()->getDelieveryDao()->getDelieveryWithDriverIdEntity($_POST[self::DRIVER_ID]);
-        if($accept_delivery->isPending() == true){
-            $accept_delivery->setPending(false);
+        $reject_delivery = $this->getAppDB()->getDelieveryDao()->getDelieveryWithId($_POST[self::ID]);
+        $reject_delivery->setPending(2);
+        $reject_delivery = $this->getAppDB()->getDelieveryDao()->updateDelievery($reject_delivery);
+
+        if($reject_delivery === null){
+            $this->killAsFailure([
+                'unable_to_update_pending_status' => true
+            ]);
         }
 
         $this->resSendOK([
-            'delivery_accepted' => $accept_delivery->isPending()
+            'delivery_rejected' => true
         ]);
     }
 }
