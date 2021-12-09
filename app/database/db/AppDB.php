@@ -11,7 +11,9 @@ class AppDB {
     private AdsDao $adsDao;
     private ConfirmDeliveryDao $confirmDeliveryDao;
     private DelieveryDao $delieveryDao;
+    private DriverConversationDao $driverConversationDao;
     private DriverDao $driverDao;
+    private DriverStatisticsDao $driverStatisticsDao;
     private Driver_notificationDao $driver_notificationDao;
 
     function __construct() {
@@ -32,8 +34,14 @@ class AppDB {
         mysqli_query($this->conn, (new DelieveryTableSchema())->getBlueprint()); // Creates Delievery Table
         $this->delieveryDao = new DelieveryDao($this->conn); // Initialize Delievery Dao
 
+        mysqli_query($this->conn, (new DriverConversationTableSchema())->getBlueprint()); // Creates DriverConversation Table
+        $this->driverConversationDao = new DriverConversationDao($this->conn); // Initialize DriverConversation Dao
+
         mysqli_query($this->conn, (new DriverTableSchema())->getBlueprint()); // Creates Driver Table
         $this->driverDao = new DriverDao($this->conn); // Initialize Driver Dao
+
+        mysqli_query($this->conn, (new DriverStatisticsTableSchema())->getBlueprint()); // Creates DriverStatistics Table
+        $this->driverStatisticsDao = new DriverStatisticsDao($this->conn); // Initialize DriverStatistics Dao
 
         mysqli_query($this->conn, (new Driver_notificationTableSchema())->getBlueprint()); // Creates Driver_notification Table
         $this->driver_notificationDao = new Driver_notificationDao($this->conn); // Initialize Driver_notification Dao
@@ -60,8 +68,16 @@ class AppDB {
         return $this->delieveryDao;
     }
 
+    public function getDriverConversationDao(): DriverConversationDao {
+        return $this->driverConversationDao;
+    }
+
     public function getDriverDao(): DriverDao {
         return $this->driverDao;
+    }
+
+    public function getDriverStatisticsDao(): DriverStatisticsDao {
+        return $this->driverStatisticsDao;
     }
 
     public function getDriver_notificationDao(): Driver_notificationDao {

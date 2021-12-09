@@ -150,4 +150,5 @@ class Driver_notificationDao extends TableDao {
         }
         return $Notifications;
     }
+
 }

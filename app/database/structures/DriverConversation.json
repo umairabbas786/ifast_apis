@@ -1,0 +1,8 @@
+{
+    "__table_name__": "driver_conversations",
+    "__cols__": [
+        [ "sender_id", "" , 50 ],
+        [ "recipient_id", "" , 50 ],
+        [ "message", "", 50]
+    ]
+} 

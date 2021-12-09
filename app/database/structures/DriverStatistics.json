@@ -1,0 +1,9 @@
+{
+    "__table_name__": "driver_statistics",
+    "__cols__": [
+        [ "driver_id", "" , 50 ],
+        [ "completed_deliveries", 0 , 170 , 0 ],
+        [ "driver_level", 0 , 170 , 0 ],
+        [ "success_rating", 0.0 , 170 , 0.0 ]
+    ]
+} 
