@@ -107,6 +107,7 @@ class Manifest {
             AcceptDeliveryRequest::class,
             ChangeDriverAvailabilityStatus::class,
             ConfirmDeliveryRequest::class,
+            CreateDriverStats::class,
             DeleteAccountDriver::class,
             DeletePostedAds::class,
             DriverChatRecipient::class,
