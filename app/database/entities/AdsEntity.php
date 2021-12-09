@@ -10,16 +10,18 @@ class AdsEntity {
     private string $location;
     private bool $availability_status;
     private string $vehicle_type;
+    private string $registered_as;
     private bool $status;
     private string $created_at;
     private string $updated_at;
 
-    public function __construct(string $uid, string $driver_id, string $driver_name, string $location, string $vehicle_type,  string $created_at, string $updated_at, bool $availability_status = false, bool $status = false) {
+    public function __construct(string $uid, string $driver_id, string $driver_name, string $location, string $vehicle_type, string $registered_as,  string $created_at, string $updated_at, bool $availability_status = false, bool $status = false) {
         $this->uid = $uid;
         $this->driver_id = $driver_id;
         $this->driver_name = $driver_name;
         $this->location = $location;
         $this->vehicle_type = $vehicle_type;
+        $this->registered_as = $registered_as;
         $this->availability_status = $availability_status;
         $this->status = $status;
         $this->created_at = $created_at;
@@ -72,6 +74,14 @@ class AdsEntity {
 
     public function setVehicleType(string $vehicle_type): void {
         $this->vehicle_type = $vehicle_type;
+    }
+
+    public function getRegisteredAs(): string {
+        return $this->registered_as;
+    }
+
+    public function setRegisteredAs(string $registered_as): void {
+        $this->registered_as = $registered_as;
     }
 
     public function isAvailabilityStatus(): bool {

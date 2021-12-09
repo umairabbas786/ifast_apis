@@ -1,0 +1,8 @@
+{
+    "__table_name__": "driver_notifications",
+    "__cols__": [
+        [ "driver_id", "" , 50 ],
+        [ "msg", "" , 50 ],
+        [ "state" , true , null, false]
+    ]
+}

@@ -17,6 +17,7 @@ class AdsDao extends TableDao {
                 AdsTableSchema::LOCATION,
                 AdsTableSchema::AVAILABILITY_STATUS,
                 AdsTableSchema::VEHICLE_TYPE,
+                AdsTableSchema::REGISTERED_AS,
                 AdsTableSchema::STATUS,
                 AdsTableSchema::CREATED_AT,
                 AdsTableSchema::UPDATED_AT
@@ -28,6 +29,7 @@ class AdsDao extends TableDao {
                 $this->escape_string($adsEntity->getLocation()),
                 $this->wrapBool($adsEntity->isAvailabilityStatus()),
                 $this->escape_string($adsEntity->getVehicleType()),
+                $this->escape_string($adsEntity->getRegisteredAs()),
                 $this->wrapBool($adsEntity->isStatus()),
                 $this->escape_string($adsEntity->getCreatedAt()),
                 $this->escape_string($adsEntity->getUpdatedAt())
@@ -103,6 +105,7 @@ class AdsDao extends TableDao {
                 [AdsTableSchema::LOCATION, $this->escape_string($adsEntity->getLocation())],
                 [AdsTableSchema::AVAILABILITY_STATUS, $this->wrapBool($adsEntity->isAvailabilityStatus())],
                 [AdsTableSchema::VEHICLE_TYPE, $this->escape_string($adsEntity->getVehicleType())],
+                [AdsTableSchema::REGISTERED_AS, $this->escape_string($adsEntity->getRegisteredAs())],
                 [AdsTableSchema::STATUS, $this->wrapBool($adsEntity->isStatus())],
                 [AdsTableSchema::CREATED_AT, $this->escape_string($adsEntity->getCreatedAt())],
                 [AdsTableSchema::UPDATED_AT, $this->escape_string($adsEntity->getUpdatedAt())]

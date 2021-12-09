@@ -13,6 +13,7 @@ class AdsFactory {
             $result[AdsTableSchema::DRIVER_NAME],
             $result[AdsTableSchema::LOCATION],
             $result[AdsTableSchema::VEHICLE_TYPE],
+            $result[AdsTableSchema::REGISTERED_AS],
             $result[AdsTableSchema::CREATED_AT],
             $result[AdsTableSchema::UPDATED_AT]
         );

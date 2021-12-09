@@ -1,20 +1,12 @@
 <?php
 
-class PostedAds extends ElectroApi {
-
-    const DRIVER_ID = "driver_id";
-
-    protected function onAssemble() {
-        if (!isset($_POST[self::DRIVER_ID])) {
-            $this->killAsBadRequestWithMissingParamException(self::DRIVER_ID);
-        }
-    }
+class GetAllPosts extends ElectroApi {
 
     protected function onDevise() {
         $posts = $this->getAppDB()->getAdsDao()
-            ->getAdsWithDriverID($_POST[self::DRIVER_ID]);
+            ->getAllAds();
 
-        if(count($posts) === 0) {
+        if($posts === null) {
             $this->killAsFailure([
                 'no_data_found' => true
             ]);
@@ -28,9 +20,7 @@ class PostedAds extends ElectroApi {
                 AdsTableSchema::ID => $ads->getId(),
                 AdsTableSchema::DRIVER_NAME => $ads->getDriverName(),
                 AdsTableSchema::LOCATION => $ads->getLocation(),
-                AdsTableSchema::AVAILABILITY_STATUS => $ads->isAvailabilityStatus(),
                 AdsTableSchema::VEHICLE_TYPE => $ads->getVehicleType(),
-                AdsTableSchema::REGISTERED_AS => $ads->getRegisteredAs(),
                 AdsTableSchema::CREATED_AT => $ads->getCreatedAt()
             ]);
         }

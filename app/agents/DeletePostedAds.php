@@ -17,7 +17,6 @@ class DeletePostedAds extends ElectroApi {
                 'unable_to_delete_ad' => true
             ]);
         }
-
         $this->resSendOK([
             'ad_deleted' => true
         ]);

@@ -10,6 +10,7 @@ class PostAnAds extends ElectroApi {
     const LOCATION = "location";
     const AVAILABILITY_STATUS = "availability_status";
     const VEHICLE_TYPE = "vehicle_type";
+    const REGISTERED_AS = "registered_as";
 
     protected function onAssemble() {
         $required_fields = [
@@ -17,7 +18,8 @@ class PostAnAds extends ElectroApi {
             self::DRIVER_NAME,
             self::LOCATION,
             self::AVAILABILITY_STATUS,
-            self::VEHICLE_TYPE
+            self::VEHICLE_TYPE,
+            self::REGISTERED_AS
         ];
 
         foreach ($required_fields as $required_field) {
@@ -37,6 +39,7 @@ class PostAnAds extends ElectroApi {
             $_POST[self::DRIVER_NAME],
             $_POST[self::LOCATION],
             $_POST[self::VEHICLE_TYPE],
+            $_POST[self::REGISTERED_AS],
             $registration_time,
             $registration_time,
             $_POST[self::AVAILABILITY_STATUS],
@@ -59,6 +62,7 @@ class PostAnAds extends ElectroApi {
                 AdsTableSchema::LOCATION => $Ads->getLocation(),
                 AdsTableSchema::AVAILABILITY_STATUS => $Ads->isAvailabilityStatus(),
                 AdsTableSchema::VEHICLE_TYPE => $Ads->getVehicleType(),
+                AdsTableSchema::REGISTERED_AS => $Ads->getRegisteredAs(),
                 AdsTableSchema::STATUS => $Ads->isStatus(),
                 AdsTableSchema::CREATED_AT => $Ads->getCreatedAt(),
                 AdsTableSchema::UPDATED_AT => $Ads->getUpdatedAt()

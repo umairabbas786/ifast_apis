@@ -12,6 +12,7 @@ class AppDB {
     private ConfirmDeliveryDao $confirmDeliveryDao;
     private DelieveryDao $delieveryDao;
     private DriverDao $driverDao;
+    private Driver_notificationDao $driver_notificationDao;
 
     function __construct() {
         $temp_conn = mysqli_connect(self::HOSTNAME, self::USERNAME, self::PASSWORD, self::DATABASE);
@@ -33,6 +34,9 @@ class AppDB {
 
         mysqli_query($this->conn, (new DriverTableSchema())->getBlueprint()); // Creates Driver Table
         $this->driverDao = new DriverDao($this->conn); // Initialize Driver Dao
+
+        mysqli_query($this->conn, (new Driver_notificationTableSchema())->getBlueprint()); // Creates Driver_notification Table
+        $this->driver_notificationDao = new Driver_notificationDao($this->conn); // Initialize Driver_notification Dao
 
     }
 
@@ -58,6 +62,10 @@ class AppDB {
 
     public function getDriverDao(): DriverDao {
         return $this->driverDao;
+    }
+
+    public function getDriver_notificationDao(): Driver_notificationDao {
+        return $this->driver_notificationDao;
     }
 }
 
