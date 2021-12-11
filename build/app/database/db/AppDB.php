@@ -2,9 +2,9 @@
 
 class AppDB {
     const HOSTNAME = "localhost";
-    const USERNAME = "root";
-    const PASSWORD = "";
-    const DATABASE = "ifast";
+    const USERNAME = "appcash_umair";
+    const PASSWORD = "Devils@dvocate007";
+    const DATABASE = "appcash_ifast";
 
     private mysqli $conn;
 

@@ -1,0 +1,7 @@
+{
+    "__table_name__": "driver_wallet",
+    "__cols__": [
+        [ "driver_id", "" , 50 ],
+        [ "balance", 0.0 , 170 , 0.0 ]
+    ]
+} 

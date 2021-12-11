@@ -1,0 +1,23 @@
+Magician Uses PhpSecLib with a little modifications for passwords.
+
+to encrypt a password use
+
+$magicianPasswordSpell = getMagician()->encrypt_password("your password");
+
+this magician password spell class contains an abracadabra, an iv, a key and the cipher text.
+
+to compare a password, you need to reconstruct the magician password spell.
+
+$magicianPasswordSpell = new MagicianPasswordSpell('abracadabra', 'your iv', 'your key', 'cipher text');
+$isPasswordValid = getMagician()->decrypt_password($magicianPasswordSpell, "your password");
+
+to encrypt other stuff use encrypt method only.
+
+$magicianSpell = getMagician()->encrypt('hello world');
+
+this magician spell contains an iv, a key and the cipher text, no abracadabra here.
+
+to decrypt stuff use decrypt method.
+
+$decryptedText = getMagician()->decrypt($magicianSpell);
+// hello world
