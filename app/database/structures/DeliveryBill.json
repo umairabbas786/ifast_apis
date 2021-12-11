@@ -1,0 +1,11 @@
+{
+    "__table_name__": "delivery_bills",
+    "__cols__": [
+        [ "driver_id", "" , 50 ],
+        [ "customer_id", "" , 50 ],
+        [ "delivery_id", "" , 50 ],
+        [ "miles", 0.0 , 170 , 0.0 ],
+        [ "payment", 0.0 , 170 , 0.0 ],
+        [ "status" , true , null, false]
+    ]
+}

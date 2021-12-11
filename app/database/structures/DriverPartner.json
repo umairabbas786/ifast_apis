@@ -1,0 +1,9 @@
+{
+    "__table_name__": "driver_partners",
+    "__cols__": [
+        [ "driver_id", "" , 50 ],
+        [ "partner_id", "" , 50 ],
+        [ "partner_type", "", 150 ],
+        [ "status" , true , null, false]
+    ]
+} 

@@ -11,8 +11,10 @@ class AppDB {
     private AdsDao $adsDao;
     private ConfirmDeliveryDao $confirmDeliveryDao;
     private DelieveryDao $delieveryDao;
+    private DeliveryBillDao $deliveryBillDao;
     private DriverConversationDao $driverConversationDao;
     private DriverDao $driverDao;
+    private DriverPartnerDao $driverPartnerDao;
     private DriverStatisticsDao $driverStatisticsDao;
     private DriverWalletDao $driverWalletDao;
     private DriverWithdrawlDao $driverWithdrawlDao;
@@ -36,11 +38,17 @@ class AppDB {
         mysqli_query($this->conn, (new DelieveryTableSchema())->getBlueprint()); // Creates Delievery Table
         $this->delieveryDao = new DelieveryDao($this->conn); // Initialize Delievery Dao
 
+        mysqli_query($this->conn, (new DeliveryBillTableSchema())->getBlueprint()); // Creates DeliveryBill Table
+        $this->deliveryBillDao = new DeliveryBillDao($this->conn); // Initialize DeliveryBill Dao
+
         mysqli_query($this->conn, (new DriverConversationTableSchema())->getBlueprint()); // Creates DriverConversation Table
         $this->driverConversationDao = new DriverConversationDao($this->conn); // Initialize DriverConversation Dao
 
         mysqli_query($this->conn, (new DriverTableSchema())->getBlueprint()); // Creates Driver Table
         $this->driverDao = new DriverDao($this->conn); // Initialize Driver Dao
+
+        mysqli_query($this->conn, (new DriverPartnerTableSchema())->getBlueprint()); // Creates DriverPartner Table
+        $this->driverPartnerDao = new DriverPartnerDao($this->conn); // Initialize DriverPartner Dao
 
         mysqli_query($this->conn, (new DriverStatisticsTableSchema())->getBlueprint()); // Creates DriverStatistics Table
         $this->driverStatisticsDao = new DriverStatisticsDao($this->conn); // Initialize DriverStatistics Dao
@@ -76,12 +84,20 @@ class AppDB {
         return $this->delieveryDao;
     }
 
+    public function getDeliveryBillDao(): DeliveryBillDao {
+        return $this->deliveryBillDao;
+    }
+
     public function getDriverConversationDao(): DriverConversationDao {
         return $this->driverConversationDao;
     }
 
     public function getDriverDao(): DriverDao {
         return $this->driverDao;
+    }
+
+    public function getDriverPartnerDao(): DriverPartnerDao {
+        return $this->driverPartnerDao;
     }
 
     public function getDriverStatisticsDao(): DriverStatisticsDao {
