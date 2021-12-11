@@ -26,7 +26,7 @@ class ChangeDriverAvailabilityStatus extends ElectroApi {
         }
 
         $this->resSendOK([
-            'Driver_availability_status_Changed'=> true
+            'Driver_status'=> $driver->isStatus()
         ]);
     }
 }

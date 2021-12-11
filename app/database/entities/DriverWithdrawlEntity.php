@@ -1,19 +1,23 @@
 <?php
 
-class DriverWalletEntity {
-    const TABLE_NAME = "driver_wallet";
+class DriverWithdrawlEntity {
+    const TABLE_NAME = "driver_withdraws";
 
     private string $id;
     private string $uid;
     private string $driver_id;
-    private float $balance;
+    private string $withdraw_method;
+    private float $amount;
+    private int $status;
     private string $created_at;
     private string $updated_at;
 
-    public function __construct(string $uid, string $driver_id,  string $created_at, string $updated_at, float $balance = 0.0) {
+    public function __construct(string $uid, string $driver_id, string $withdraw_method,  string $created_at, string $updated_at, float $amount = 0.0, int $status = 0) {
         $this->uid = $uid;
         $this->driver_id = $driver_id;
-        $this->balance = $balance;
+        $this->withdraw_method = $withdraw_method;
+        $this->amount = $amount;
+        $this->status = $status;
         $this->created_at = $created_at;
         $this->updated_at = $updated_at;
         }
@@ -42,12 +46,28 @@ class DriverWalletEntity {
         $this->driver_id = $driver_id;
     }
 
-    public function getBalance(): float {
-        return $this->balance;
+    public function getWithdrawMethod(): string {
+        return $this->withdraw_method;
     }
 
-    public function setBalance(float $balance = 0.0): void {
-        $this->balance = $balance;
+    public function setWithdrawMethod(string $withdraw_method): void {
+        $this->withdraw_method = $withdraw_method;
+    }
+
+    public function getAmount(): float {
+        return $this->amount;
+    }
+
+    public function setAmount(float $amount = 0.0): void {
+        $this->amount = $amount;
+    }
+
+    public function getStatus(): int {
+        return $this->status;
+    }
+
+    public function setStatus(int $status = 0): void {
+        $this->status = $status;
     }
 
     public function getCreatedAt(): string {

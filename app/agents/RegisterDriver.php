@@ -98,6 +98,41 @@ class RegisterDriver extends ElectroApi {
             ]);
         }
 
+        $id = $driver->getId();
+        $stats = new DriverStatisticsEntity(
+            Uuid::uuid4()->toString(),
+            $id,
+            $registration_time,
+            $registration_time,
+            0,
+            0,
+            0
+        );
+
+        $stats = $this->getAppDB()->getDriverStatisticsDao()->insertDriverStatistics($stats);
+
+        if($stats === null){
+            $this->killAsFailure([
+                "failed_to_create_driver_statistics" => true
+            ]);
+        }
+
+        $stats = new DriverWalletEntity(
+            Uuid::uuid4()->toString(),
+            $id,
+            $registration_time,
+            $registration_time,
+            0.0
+        );
+
+        $stats = $this->getAppDB()->getDriverWalletDao()->insertDriverWallet($stats);
+
+        if($stats === null){
+            $this->killAsFailure([
+                "failed_to_create_driver_wallet" => true
+            ]);
+        }
+
         $this->resSendOK([
             'driver'=>[
                 DriverTableSchema::ID => $driver->getId(),

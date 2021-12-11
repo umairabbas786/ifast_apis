@@ -15,6 +15,7 @@ class AppDB {
     private DriverDao $driverDao;
     private DriverStatisticsDao $driverStatisticsDao;
     private DriverWalletDao $driverWalletDao;
+    private DriverWithdrawlDao $driverWithdrawlDao;
     private Driver_notificationDao $driver_notificationDao;
 
     function __construct() {
@@ -46,6 +47,9 @@ class AppDB {
 
         mysqli_query($this->conn, (new DriverWalletTableSchema())->getBlueprint()); // Creates DriverWallet Table
         $this->driverWalletDao = new DriverWalletDao($this->conn); // Initialize DriverWallet Dao
+
+        mysqli_query($this->conn, (new DriverWithdrawlTableSchema())->getBlueprint()); // Creates DriverWithdrawl Table
+        $this->driverWithdrawlDao = new DriverWithdrawlDao($this->conn); // Initialize DriverWithdrawl Dao
 
         mysqli_query($this->conn, (new Driver_notificationTableSchema())->getBlueprint()); // Creates Driver_notification Table
         $this->driver_notificationDao = new Driver_notificationDao($this->conn); // Initialize Driver_notification Dao
@@ -86,6 +90,10 @@ class AppDB {
 
     public function getDriverWalletDao(): DriverWalletDao {
         return $this->driverWalletDao;
+    }
+
+    public function getDriverWithdrawlDao(): DriverWithdrawlDao {
+        return $this->driverWithdrawlDao;
     }
 
     public function getDriver_notificationDao(): Driver_notificationDao {
