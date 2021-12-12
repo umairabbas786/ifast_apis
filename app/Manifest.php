@@ -50,6 +50,7 @@ class Manifest {
             DriverWalletEntity::class,
             DriverWithdrawlEntity::class,
             Driver_notificationEntity::class,
+            RegisterCustomerEntity::class,
         ],
         'schema' => [
             AdsTableSchema::class,
@@ -63,6 +64,7 @@ class Manifest {
             DriverWalletTableSchema::class,
             DriverWithdrawlTableSchema::class,
             Driver_notificationTableSchema::class,
+            RegisterCustomerTableSchema::class,
         ],
         'factories' => [
             AdsFactory::class,
@@ -76,6 +78,7 @@ class Manifest {
             DriverWalletFactory::class,
             DriverWithdrawlFactory::class,
             Driver_notificationFactory::class,
+            RegisterCustomerFactory::class,
         ],
         'dao' => [
             AdsDao::class,
@@ -89,6 +92,7 @@ class Manifest {
             DriverWalletDao::class,
             DriverWithdrawlDao::class,
             Driver_notificationDao::class,
+            RegisterCustomerDao::class,
         ],
         'db' => [
             AppDB::class
@@ -133,6 +137,7 @@ class Manifest {
             FetchChatConversations::class,
             GetAllPosts::class,
             GetDriverNotification::class,
+            LoginCustomer::class,
             LoginDriver::class,
             MakeDeliveryCustomer::class,
             MakePartnerDriver::class,
@@ -140,6 +145,7 @@ class Manifest {
             PostAnAds::class,
             PostedAds::class,
             ReadDriverNotification::class,
+            RegisterCustomer::class,
             RegisterDriver::class,
             RejectDeliveryRequest::class,
             SendMessage::class,

@@ -1,0 +1,12 @@
+{
+    "__table_name__": "customers",
+    "__cols__": [
+        [ "profile_picture", "" , 150 ],
+        [ "first_name", "" , 50 ],
+        [ "last_name", "" , 50 ],
+        [ "email", "" , 150 ],
+        [ "country", "" , 150 ],
+        [ "password", "" , 150 ],
+        [ "account_verified" , true , null, false]
+    ]
+} 

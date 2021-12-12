@@ -2,16 +2,18 @@
 
 class DeleteAccountDriver extends ElectroApi {
 
-    const DRIVER_ID = "driver_id";
+    const CUSTOMER_ID = "customer_id";
 
     protected function onAssemble() {
-        if (!isset($_POST[self::DRIVER_ID])) {
-            $this->killAsBadRequestWithMissingParamException(self::DRIVER_ID);
+        if (!isset($_POST[self::CUSTOMER_ID])) {
+            $this->killAsBadRequestWithMissingParamException(self::CUSTOMER_ID);
         }
     }
 
     protected function onDevise() {
-        $driver_delete = $this->getAppDB()->getDriverDao()->deleteDriverWithId($_POST[self::DRIVER_ID]);
+
+
+        $driver_delete = $this->getAppDB()->getRegisterCustomerDao()->deleteRegisterCustomerWithId($_POST[self::CUSTOMER_ID]);
         if($driver_delete === false){
             $this->killAsFailure([
                 'unable_to_delete_driver' => true

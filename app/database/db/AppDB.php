@@ -19,6 +19,7 @@ class AppDB {
     private DriverWalletDao $driverWalletDao;
     private DriverWithdrawlDao $driverWithdrawlDao;
     private Driver_notificationDao $driver_notificationDao;
+    private RegisterCustomerDao $registerCustomerDao;
 
     function __construct() {
         $temp_conn = mysqli_connect(self::HOSTNAME, self::USERNAME, self::PASSWORD, self::DATABASE);
@@ -61,6 +62,9 @@ class AppDB {
 
         mysqli_query($this->conn, (new Driver_notificationTableSchema())->getBlueprint()); // Creates Driver_notification Table
         $this->driver_notificationDao = new Driver_notificationDao($this->conn); // Initialize Driver_notification Dao
+
+        mysqli_query($this->conn, (new RegisterCustomerTableSchema())->getBlueprint()); // Creates RegisterCustomer Table
+        $this->registerCustomerDao = new RegisterCustomerDao($this->conn); // Initialize RegisterCustomer Dao
 
     }
 
@@ -114,6 +118,10 @@ class AppDB {
 
     public function getDriver_notificationDao(): Driver_notificationDao {
         return $this->driver_notificationDao;
+    }
+
+    public function getRegisterCustomerDao(): RegisterCustomerDao {
+        return $this->registerCustomerDao;
     }
 }
 
