@@ -169,4 +169,5 @@ class RegisterCustomerDao extends TableDao {
 
         return (bool) mysqli_query($this->getConnection(), $query);
     }
+
 }

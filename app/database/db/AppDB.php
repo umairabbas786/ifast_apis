@@ -10,6 +10,7 @@ class AppDB {
 
     private AdsDao $adsDao;
     private ConfirmDeliveryDao $confirmDeliveryDao;
+    private CustomerNotificationDao $customerNotificationDao;
     private DelieveryDao $delieveryDao;
     private DeliveryBillDao $deliveryBillDao;
     private DriverConversationDao $driverConversationDao;
@@ -35,6 +36,9 @@ class AppDB {
 
         mysqli_query($this->conn, (new ConfirmDeliveryTableSchema())->getBlueprint()); // Creates ConfirmDelivery Table
         $this->confirmDeliveryDao = new ConfirmDeliveryDao($this->conn); // Initialize ConfirmDelivery Dao
+
+        mysqli_query($this->conn, (new CustomerNotificationTableSchema())->getBlueprint()); // Creates CustomerNotification Table
+        $this->customerNotificationDao = new CustomerNotificationDao($this->conn); // Initialize CustomerNotification Dao
 
         mysqli_query($this->conn, (new DelieveryTableSchema())->getBlueprint()); // Creates Delievery Table
         $this->delieveryDao = new DelieveryDao($this->conn); // Initialize Delievery Dao
@@ -82,6 +86,10 @@ class AppDB {
 
     public function getConfirmDeliveryDao(): ConfirmDeliveryDao {
         return $this->confirmDeliveryDao;
+    }
+
+    public function getCustomerNotificationDao(): CustomerNotificationDao {
+        return $this->customerNotificationDao;
     }
 
     public function getDelieveryDao(): DelieveryDao {

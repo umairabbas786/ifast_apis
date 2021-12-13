@@ -151,4 +151,25 @@ class ConfirmDeliveryDao extends TableDao {
         return (bool) mysqli_query($this->getConnection(), $query);
     } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
 
+    public function getConfirmDeliveryWithDeliveryID(string $uid): array {
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(ConfirmDeliveryEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [ConfirmDeliveryTableSchema::DELIVERY_ID, '=', $this->escape_string($uid)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+
+        $ads = [];
+
+        if ($result) {
+            while($row = mysqli_fetch_assoc($result)) {
+                array_push($ads, ConfirmDeliveryFactory::mapFromDatabaseResult($row));
+            }
+        }
+        return $ads;
+    }
+
 }
