@@ -158,11 +158,11 @@ class DriverConversationDao extends TableDao {
             ->withTableName(DriverConversationEntity::TABLE_NAME)
             ->columns(['*'])
             ->whereParams([
-                [DriverConversationTableSchema::RECIPIENT_ID,'=', $this->escape_string($driver_id)],
+                [DriverConversationTableSchema::RECIPIENT_ID,'=', $this->escape_string($recipients_id)],
                 ['OR'],
                 [DriverConversationTableSchema::SENDER_ID, '=', $this->escape_string($driver_id)],
-                ['OR'],
-                [DriverConversationTableSchema::RECIPIENT_ID,'=', $this->escape_string($recipients_id)],
+                ['AND'],
+                [DriverConversationTableSchema::RECIPIENT_ID,'=', $this->escape_string($driver_id)],
                 ['OR'],
                 [DriverConversationTableSchema::SENDER_ID,'=', $this->escape_string($recipients_id)]
             ])
