@@ -154,4 +154,22 @@ class DriverPartnerDao extends TableDao {
         return $ads;
     }
 
+    public function getDriverPartnerWithDriverIdAndPartnerId(string $did,string $pid): ?DriverPartnerEntity {
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(DriverPartnerEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [DriverPartnerTableSchema::DRIVER_ID, '=', $this->escape_string($did)],
+                ['AND'],
+                [DriverPartnerTableSchema::PARTNER_ID, '=', $this->escape_string($pid)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+
+        if ($result && $result->num_rows >= 1) {
+            return DriverPartnerFactory::mapFromDatabaseResult(mysqli_fetch_assoc($result));
+        }
+        return null;
+    }
 }

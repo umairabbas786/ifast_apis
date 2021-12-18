@@ -13,6 +13,7 @@ class ShowAllDrivers extends ElectroApi {
                 AdsTableSchema::DRIVER_ID => $Delivery->getId(),
                 AdsTableSchema::DRIVER_NAME => $Delivery->getDriverName(),
                 AdsTableSchema::VEHICLE_TYPE => $Delivery->getVehicleType(),
+                AdsTableSchema::LOCATION => $Delivery->getLocation(),
                 AdsTableSchema::AVAILABILITY_STATUS => $Delivery->isAvailabilityStatus()
             ]);
         }

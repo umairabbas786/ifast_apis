@@ -18,7 +18,7 @@ class ShowdriverWithdrawlRequest extends ElectroApi {
         /** @var DriverWithdrawlEntity $Delivery */
         foreach ($deliveries as $Delivery) {
             array_push($deliver, [
-                DriverWithdrawlTableSchema::WITHDRAW_METHOD => $Delivery->getWithdrawMethod(),
+                DriverWithdrawlTableSchema::WITHDRAW_EMAIL => $Delivery->getWithdrawEmail(),
                 DriverWithdrawlTableSchema::AMOUNT => $Delivery->getAmount(),
                 DriverWithdrawlTableSchema::STATUS => $Delivery->getStatus(),
                 DriverWithdrawlTableSchema::CREATED_AT => $Delivery->getCreatedAt()

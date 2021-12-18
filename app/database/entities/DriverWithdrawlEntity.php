@@ -6,16 +6,16 @@ class DriverWithdrawlEntity {
     private string $id;
     private string $uid;
     private string $driver_id;
-    private string $withdraw_method;
+    private string $withdraw_email;
     private float $amount;
     private int $status;
     private string $created_at;
     private string $updated_at;
 
-    public function __construct(string $uid, string $driver_id, string $withdraw_method,  string $created_at, string $updated_at, float $amount = 0.0, int $status = 0) {
+    public function __construct(string $uid, string $driver_id, string $withdraw_email,  string $created_at, string $updated_at, float $amount = 0.0, int $status = 0) {
         $this->uid = $uid;
         $this->driver_id = $driver_id;
-        $this->withdraw_method = $withdraw_method;
+        $this->withdraw_email = $withdraw_email;
         $this->amount = $amount;
         $this->status = $status;
         $this->created_at = $created_at;
@@ -46,12 +46,12 @@ class DriverWithdrawlEntity {
         $this->driver_id = $driver_id;
     }
 
-    public function getWithdrawMethod(): string {
-        return $this->withdraw_method;
+    public function getWithdrawEmail(): string {
+        return $this->withdraw_email;
     }
 
-    public function setWithdrawMethod(string $withdraw_method): void {
-        $this->withdraw_method = $withdraw_method;
+    public function setWithdrawEmail(string $withdraw_email): void {
+        $this->withdraw_email = $withdraw_email;
     }
 
     public function getAmount(): float {

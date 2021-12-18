@@ -19,7 +19,9 @@ class ShowDriverPartners extends ElectroApi {
         foreach ($deliveries as $Delivery) {
             array_push($deliver, [
                 DriverPartnerTableSchema::PARTNER_ID => $Delivery->getPartnerId(),
+                DriverPartnerTableSchema::DRIVER_ID => $Delivery->getDriverId(),
                 DriverPartnerTableSchema::PARTNER_TYPE => $Delivery->getPartnerType(),
+                DriverPartnerTableSchema::STATUS => $Delivery->isStatus(),
                 DriverPartnerTableSchema::CREATED_AT => $Delivery->getCreatedAt()
             ]);
         }

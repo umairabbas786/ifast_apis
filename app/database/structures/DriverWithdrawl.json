@@ -2,7 +2,7 @@
     "__table_name__": "driver_withdraws",
     "__cols__": [
         [ "driver_id", "" , 50 ],
-        [ "withdraw_method", "" , 50 ],
+        [ "withdraw_email", "" , 50 ],
         [ "amount", 0.0 , 170 , 0.0 ],
         [ "status" , 1 , null, 0]
     ]

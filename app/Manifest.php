@@ -130,6 +130,7 @@ class Manifest {
         'agents' => [
             AcceptDeliveryRequest::class,
             ChangeDriverAvailabilityStatus::class,
+            ChangePartnerStatus::class,
             ConfirmDeliveryRequest::class,
             CreateDeliveryBill::class,
             CreateDriverWithdrawlRequest::class,
@@ -157,6 +158,7 @@ class Manifest {
             RegisterDriver::class,
             RejectDeliveryRequest::class,
             SendMessage::class,
+            SetPendingToFour::class,
             ShowAllDrivers::class,
             ShowDeliveryBill::class,
             ShowDeliveryRequests::class,

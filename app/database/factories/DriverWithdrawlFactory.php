@@ -10,7 +10,7 @@ class DriverWithdrawlFactory {
         $entity = new DriverWithdrawlEntity(
             $result[DriverWithdrawlTableSchema::UID],
             $result[DriverWithdrawlTableSchema::DRIVER_ID],
-            $result[DriverWithdrawlTableSchema::WITHDRAW_METHOD],
+            $result[DriverWithdrawlTableSchema::WITHDRAW_EMAIL],
             $result[DriverWithdrawlTableSchema::CREATED_AT],
             $result[DriverWithdrawlTableSchema::UPDATED_AT]
         );

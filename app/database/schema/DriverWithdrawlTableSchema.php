@@ -5,7 +5,7 @@ class DriverWithdrawlTableSchema extends TableSchema {
     const ID = "id";
     const UID = "uid";
     const DRIVER_ID = "driver_id";
-    const WITHDRAW_METHOD = "withdraw_method";
+    const WITHDRAW_EMAIL = "withdraw_email";
     const AMOUNT = "amount";
     const STATUS = "status";
     const CREATED_AT = "created_at";
@@ -18,7 +18,7 @@ class DriverWithdrawlTableSchema extends TableSchema {
             " . self::ID . " INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
             " . self::UID . " VARCHAR(50) NOT NULL,
             " . self::DRIVER_ID . " VARCHAR(50) NOT NULL,
-            " . self::WITHDRAW_METHOD . " VARCHAR(50) NOT NULL,
+            " . self::WITHDRAW_EMAIL . " VARCHAR(50) NOT NULL,
             " . self::AMOUNT . " VARCHAR(170) NOT NULL,
             " . self::STATUS . " INT NOT NULL,
             " . self::CREATED_AT . " VARCHAR(100) NOT NULL,

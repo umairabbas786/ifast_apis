@@ -13,7 +13,7 @@ class DriverWithdrawlDao extends TableDao {
             ->columns([
                 DriverWithdrawlTableSchema::UID,
                 DriverWithdrawlTableSchema::DRIVER_ID,
-                DriverWithdrawlTableSchema::WITHDRAW_METHOD,
+                DriverWithdrawlTableSchema::WITHDRAW_EMAIL,
                 DriverWithdrawlTableSchema::AMOUNT,
                 DriverWithdrawlTableSchema::STATUS,
                 DriverWithdrawlTableSchema::CREATED_AT,
@@ -22,7 +22,7 @@ class DriverWithdrawlDao extends TableDao {
             ->values([
                 $this->escape_string($driverwithdrawlEntity->getUid()),
                 $this->escape_string($driverwithdrawlEntity->getDriverId()),
-                $this->escape_string($driverwithdrawlEntity->getWithdrawMethod()),
+                $this->escape_string($driverwithdrawlEntity->getWithdrawEmail()),
                 $this->escape_string($driverwithdrawlEntity->getAmount()),
                 $this->escape_string($driverwithdrawlEntity->getStatus()),
                 $this->escape_string($driverwithdrawlEntity->getCreatedAt()),
@@ -95,7 +95,7 @@ class DriverWithdrawlDao extends TableDao {
             ->withTableName(DriverWithdrawlEntity::TABLE_NAME)
             ->updateParams([
                 [DriverWithdrawlTableSchema::DRIVER_ID, $this->escape_string($driverwithdrawlEntity->getDriverId())],
-                [DriverWithdrawlTableSchema::WITHDRAW_METHOD, $this->escape_string($driverwithdrawlEntity->getWithdrawMethod())],
+                [DriverWithdrawlTableSchema::WITHDRAW_EMAIL, $this->escape_string($driverwithdrawlEntity->getWithdrawEmail())],
                 [DriverWithdrawlTableSchema::AMOUNT, $this->escape_string($driverwithdrawlEntity->getAmount())],
                 [DriverWithdrawlTableSchema::STATUS, $this->escape_string($driverwithdrawlEntity->getStatus())],
                 [DriverWithdrawlTableSchema::CREATED_AT, $this->escape_string($driverwithdrawlEntity->getCreatedAt())],

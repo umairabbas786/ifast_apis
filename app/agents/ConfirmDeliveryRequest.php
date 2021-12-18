@@ -28,25 +28,25 @@ class ConfirmDeliveryRequest extends ElectroApi {
             }
         }
 
-        if (!isset($_FILES[self::NUMBER_PLATE])) {
-            $this->killAsBadRequestWithMissingParamException(self::NUMBER_PLATE);
-        }
-        if (!isset($_FILES[self::FACE_PICTURE])) {
-            $this->killAsBadRequestWithMissingParamException(self::FACE_PICTURE);
-        }
-        if (!isset($_FILES[self::BEFORE_ITEMS])) {
-            $this->killAsBadRequestWithMissingParamException(self::BEFORE_ITEMS);
-        }
-        if (!isset($_FILES[self::AFTER_ITEMS])) {
-            $this->killAsBadRequestWithMissingParamException(self::AFTER_ITEMS);
-        }
+//        if (!isset($_FILES[self::NUMBER_PLATE])) {
+//            $this->killAsBadRequestWithMissingParamException(self::NUMBER_PLATE);
+//        }
+//        if (!isset($_FILES[self::FACE_PICTURE])) {
+//            $this->killAsBadRequestWithMissingParamException(self::FACE_PICTURE);
+//        }
+//        if (!isset($_FILES[self::BEFORE_ITEMS])) {
+//            $this->killAsBadRequestWithMissingParamException(self::BEFORE_ITEMS);
+//        }
+//        if (!isset($_FILES[self::AFTER_ITEMS])) {
+//            $this->killAsBadRequestWithMissingParamException(self::AFTER_ITEMS);
+//        }
     }
 
     protected function onDevise() {
 
         $numberPlateGeneratedName = "";
         $isNumberPlateImageSaved = ImageUploader::withSrc($_FILES[self::NUMBER_PLATE]['tmp_name'])
-            ->destinationDir($this->getDeliveryProofImageDirPath())
+            ->destinationDir($this->getDriverImageDirPath())
             ->generateUniqueName($_FILES[self::NUMBER_PLATE]['name'])
             ->mapGeneratedName($numberPlateGeneratedName)
             ->compressQuality(75)
@@ -59,7 +59,7 @@ class ConfirmDeliveryRequest extends ElectroApi {
 
         $facePictureGeneratedName = "";
         $isFacePictureImageSaved = ImageUploader::withSrc($_FILES[self::FACE_PICTURE]['tmp_name'])
-            ->destinationDir($this->getDeliveryProofImageDirPath())
+            ->destinationDir($this->getDriverImageDirPath())
             ->generateUniqueName($_FILES[self::FACE_PICTURE]['name'])
             ->mapGeneratedName($facePictureGeneratedName)
             ->compressQuality(75)
@@ -72,7 +72,7 @@ class ConfirmDeliveryRequest extends ElectroApi {
 
         $beforeItemsGeneratedName = "";
         $isBeforeItemsImageSaved = ImageUploader::withSrc($_FILES[self::BEFORE_ITEMS]['tmp_name'])
-            ->destinationDir($this->getDeliveryProofImageDirPath())
+            ->destinationDir($this->getDriverImageDirPath())
             ->generateUniqueName($_FILES[self::BEFORE_ITEMS]['name'])
             ->mapGeneratedName($beforeItemsGeneratedName)
             ->compressQuality(75)
@@ -85,7 +85,7 @@ class ConfirmDeliveryRequest extends ElectroApi {
 
         $afterItemsGeneratedName = "";
         $isAfterItemsImageSaved = ImageUploader::withSrc($_FILES[self::AFTER_ITEMS]['tmp_name'])
-            ->destinationDir($this->getDeliveryProofImageDirPath())
+            ->destinationDir($this->getDriverImageDirPath())
             ->generateUniqueName($_FILES[self::AFTER_ITEMS]['name'])
             ->mapGeneratedName($afterItemsGeneratedName)
             ->compressQuality(75)
@@ -108,7 +108,7 @@ class ConfirmDeliveryRequest extends ElectroApi {
             $facePictureGeneratedName,
             $beforeItemsGeneratedName,
             $afterItemsGeneratedName,
-            1,
+            0,
             $registration_time,
             $registration_time,
             false

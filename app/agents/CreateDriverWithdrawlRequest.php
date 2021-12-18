@@ -6,13 +6,13 @@ use Ramsey\Uuid\Uuid;
 class CreateDriverWithdrawlRequest extends ElectroApi {
 
     const DRIVER_ID = "driver_id";
-    const METHOD = "withdraw_method";
+    const EMAIL = "paypal_email";
     const BALANCE = "balance";
 
     protected function onAssemble() {
         $required_fields = [
             self::DRIVER_ID,
-            self::METHOD,
+            self::EMAIL,
             self::BALANCE
         ];
 
@@ -30,7 +30,7 @@ class CreateDriverWithdrawlRequest extends ElectroApi {
         $stats = new DriverWithdrawlEntity(
             Uuid::uuid4()->toString(),
             $_POST[self::DRIVER_ID],
-            $_POST[self::METHOD],
+            $_POST[self::EMAIL],
             $registration_time,
             $registration_time,
             $_POST[self::BALANCE],
@@ -68,7 +68,7 @@ class CreateDriverWithdrawlRequest extends ElectroApi {
             'driver_wallet'=>[
                 DriverWithdrawlTableSchema::ID => $stats->getId(),
                 DriverWithdrawlTableSchema::AMOUNT => $stats->getAmount(),
-                DriverWithdrawlTableSchema::WITHDRAW_METHOD => $stats->getWithdrawMethod(),
+                DriverWithdrawlTableSchema::WITHDRAW_EMAIL => $stats->getWithdrawEmail(),
                 DriverWithdrawlTableSchema::STATUS => $stats->getStatus(),
                 DriverWithdrawlTableSchema::CREATED_AT => $stats->getCreatedAt()
             ]
