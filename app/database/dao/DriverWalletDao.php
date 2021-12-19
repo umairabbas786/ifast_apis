@@ -148,4 +148,21 @@ class DriverWalletDao extends TableDao {
         return $ads;
     }
 
+    public function getDriverWalletWithDriverIdEntity(string $id): ?DriverWalletEntity {
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(DriverWalletEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [DriverWalletTableSchema::DRIVER_ID, '=', $this->escape_string($id)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+
+        if ($result && $result->num_rows >= 1) {
+            return DriverWalletFactory::mapFromDatabaseResult(mysqli_fetch_assoc($result));
+        }
+        return null;
+    }
+
 }

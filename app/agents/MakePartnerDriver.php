@@ -37,6 +37,15 @@ class MakePartnerDriver extends ElectroApi {
             false
         );
 
+        $checkPartner = $this->getAppDB()->getDriverPartnerDao()
+            ->getDriverPartnerWithDriverIdAndPartnerId($_POST[self::DRIVER_ID],$_POST[self::PARTNER_ID]);
+
+        if($checkPartner !== null){
+            $this->killAsFailure([
+                "partner_already_registered" => true
+            ]);
+        }
+
         $deliveries = $this->getAppDB()->getDriverPartnerDao()
             ->getDriverPartnerWithDriverId($_POST[self::DRIVER_ID]);
         if(count($deliveries) === 4){

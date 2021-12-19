@@ -37,25 +37,6 @@ class CreateDriverWithdrawlRequest extends ElectroApi {
             0
         );
 
-//        /** @var DriverWalletEntity $wallet */
-//        $wallet = $this->getAppDB()->getDriverWalletDao()->getDriverWalletWithDriverId($_POST[self::DRIVER_ID]);
-//        $oldAmount = $wallet->getBalance();
-//        $withdrawAmount = (float) $_POST[self::BALANCE];
-//        if($withdrawAmount > $oldAmount){
-//            $this->killAsFailure([
-//                'not_enough_balance'=>true
-//            ]);
-//        }
-//
-//        $wallet->setBalance($wallet->getBalance() - (float) $_POST[self::BALANCE]);
-//        $wallet->setUpdatedAt(Carbon::now());
-//        $wallet = $this->getAppDB()->getDriverWalletDao()->updateDriverWallet($wallet);
-//        if($wallet === null){
-//            $this->killAsFailure([
-//                'fail_to_update_balance'=>true
-//            ]);
-//        }
-
         $stats = $this->getAppDB()->getDriverWithdrawlDao()->insertDriverWithdrawl($stats);
 
         if($stats === null){

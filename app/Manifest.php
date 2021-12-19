@@ -161,11 +161,13 @@ class Manifest {
             SetPendingToFour::class,
             ShowAllDrivers::class,
             ShowDeliveryBill::class,
+            ShowDeliveryRequestCustomer::class,
             ShowDeliveryRequests::class,
             ShowDriverPartners::class,
             ShowDriverWallet::class,
             ShowdriverWithdrawlRequest::class,
             StatsDriver::class,
+            UpdateDriverWallet::class,
             UpdatePostAdStatus::class,
         ]
     ];

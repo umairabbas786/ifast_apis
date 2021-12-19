@@ -180,4 +180,24 @@ class DelieveryDao extends TableDao {
         return $deliveries;
     }
 
+    public function getDeliveriesWithCustomerID(string $driver_id): array {
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(DelieveryEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [DelieveryTableSchema::CUSTOMER_ID, '=', $this->escape_string($driver_id)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+        $deliveries = [];
+
+        if ($result) {
+            while($row = mysqli_fetch_assoc($result)) {
+                array_push($deliveries, DelieveryFactory::mapFromDatabaseResult($row));
+            }
+        }
+        return $deliveries;
+    }
+
 }

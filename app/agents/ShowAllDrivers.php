@@ -2,9 +2,17 @@
 
 class ShowAllDrivers extends ElectroApi {
 
+    const VEHICLE_TYPE = "vehicle_type";
+
+    protected function onAssemble() {
+        if (!isset($_POST[self::VEHICLE_TYPE])) {
+            $this->killAsBadRequestWithMissingParamException(self::VEHICLE_TYPE);
+        }
+    }
+
     protected function onDevise() {
         $deliveries = $this->getAppDB()->getAdsDao()
-            ->getAllAds();
+            ->getAllAds($_POST[self::VEHICLE_TYPE]);
 
         $deliver = [];
         /** @var AdsEntity $Delivery */

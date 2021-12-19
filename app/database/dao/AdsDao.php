@@ -78,10 +78,13 @@ class AdsDao extends TableDao {
         return null;
     } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
 
-    public function getAllAds(): array { // <***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
+    public function getAllAds(string $vehicle): array {
         $query = QueryBuilder::withQueryType(QueryType::SELECT)
              ->withTableName(AdsEntity::TABLE_NAME)
              ->columns(['*'])
+            ->whereParams([
+                [AdsTableSchema::VEHICLE_TYPE, '=', $this->escape_string($vehicle)]
+            ])
              ->generate();
 
         $result = mysqli_query($this->getConnection(), $query);
@@ -94,7 +97,7 @@ class AdsDao extends TableDao {
             }
         }
         return $adss;
-    } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
+    }
 
     public function updateAds(AdsEntity $adsEntity): ?AdsEntity { // <***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
         $query = QueryBuilder::withQueryType(QueryType::UPDATE)
