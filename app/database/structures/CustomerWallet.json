@@ -1,0 +1,7 @@
+{
+    "__table_name__": "customer_wallet",
+    "__cols__": [
+        [ "customer_id", "" , 50 ],
+        [ "balance", 0.0 , 170 , 0.0 ]
+    ]
+} 

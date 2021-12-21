@@ -10,7 +10,9 @@ class AppDB {
 
     private AdsDao $adsDao;
     private ConfirmDeliveryDao $confirmDeliveryDao;
+    private CustomerDepositDao $customerDepositDao;
     private CustomerNotificationDao $customerNotificationDao;
+    private CustomerWalletDao $customerWalletDao;
     private DelieveryDao $delieveryDao;
     private DeliveryBillDao $deliveryBillDao;
     private DriverConversationDao $driverConversationDao;
@@ -37,8 +39,14 @@ class AppDB {
         mysqli_query($this->conn, (new ConfirmDeliveryTableSchema())->getBlueprint()); // Creates ConfirmDelivery Table
         $this->confirmDeliveryDao = new ConfirmDeliveryDao($this->conn); // Initialize ConfirmDelivery Dao
 
+        mysqli_query($this->conn, (new CustomerDepositTableSchema())->getBlueprint()); // Creates CustomerDeposit Table
+        $this->customerDepositDao = new CustomerDepositDao($this->conn); // Initialize CustomerDeposit Dao
+
         mysqli_query($this->conn, (new CustomerNotificationTableSchema())->getBlueprint()); // Creates CustomerNotification Table
         $this->customerNotificationDao = new CustomerNotificationDao($this->conn); // Initialize CustomerNotification Dao
+
+        mysqli_query($this->conn, (new CustomerWalletTableSchema())->getBlueprint()); // Creates CustomerWallet Table
+        $this->customerWalletDao = new CustomerWalletDao($this->conn); // Initialize CustomerWallet Dao
 
         mysqli_query($this->conn, (new DelieveryTableSchema())->getBlueprint()); // Creates Delievery Table
         $this->delieveryDao = new DelieveryDao($this->conn); // Initialize Delievery Dao
@@ -88,8 +96,16 @@ class AppDB {
         return $this->confirmDeliveryDao;
     }
 
+    public function getCustomerDepositDao(): CustomerDepositDao {
+        return $this->customerDepositDao;
+    }
+
     public function getCustomerNotificationDao(): CustomerNotificationDao {
         return $this->customerNotificationDao;
+    }
+
+    public function getCustomerWalletDao(): CustomerWalletDao {
+        return $this->customerWalletDao;
     }
 
     public function getDelieveryDao(): DelieveryDao {

@@ -172,4 +172,5 @@ class DriverPartnerDao extends TableDao {
         }
         return null;
     }
+
 }

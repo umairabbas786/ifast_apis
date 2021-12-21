@@ -78,13 +78,10 @@ class AdsDao extends TableDao {
         return null;
     } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
 
-    public function getAllAds(string $vehicle): array {
+    public function getAllAds(): array { // <***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
         $query = QueryBuilder::withQueryType(QueryType::SELECT)
              ->withTableName(AdsEntity::TABLE_NAME)
              ->columns(['*'])
-            ->whereParams([
-                [AdsTableSchema::VEHICLE_TYPE, '=', $this->escape_string($vehicle)]
-            ])
              ->generate();
 
         $result = mysqli_query($this->getConnection(), $query);
@@ -97,7 +94,7 @@ class AdsDao extends TableDao {
             }
         }
         return $adss;
-    }
+    } // </***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
 
     public function updateAds(AdsEntity $adsEntity): ?AdsEntity { // <***_ELECTRO_GENERATED_DO_NOT_REMOVE_***>
         $query = QueryBuilder::withQueryType(QueryType::UPDATE)
@@ -151,6 +148,26 @@ class AdsDao extends TableDao {
             ->columns(['*'])
             ->whereParams([
                 [AdsTableSchema::DRIVER_ID, '=', $this->escape_string($driver_id)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+        $adss = [];
+
+        if ($result) {
+            while($row = mysqli_fetch_assoc($result)) {
+                array_push($adss, AdsFactory::mapFromDatabaseResult($row));
+            }
+        }
+        return $adss;
+    }
+
+    public function getAdsWithVehicleTypeID(string $driver_id): array {
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(AdsEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [AdsTableSchema::VEHICLE_TYPE, '=', $this->escape_string($driver_id)]
             ])
             ->generate();
 

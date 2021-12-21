@@ -1,0 +1,8 @@
+{
+    "__table_name__": "customer_deposit",
+    "__cols__": [
+        [ "customer_id", "" , 50 ],
+        [ "amount", 0.0 , 170 , 0.0 ],
+        [ "status" , 1 , null, 0]
+    ]
+}

@@ -79,6 +79,23 @@ class RegisterCustomer extends ElectroApi {
             ]);
         }
 
+        $id = $customer->getId();
+        $stats = new CustomerWalletEntity(
+            Uuid::uuid4()->toString(),
+            $id,
+            $registration_time,
+            $registration_time,
+            0.0
+        );
+
+        $stats = $this->getAppDB()->getCustomerWalletDao()->insertCustomerWallet($stats);
+
+        if($stats === null){
+            $this->killAsFailure([
+                "failed_to_create_driver_wallet" => true
+            ]);
+        }
+
         $this->resSendOK([
             'customer' => [
                 RegisterCustomerTableSchema::ID => $customer->getId(),
