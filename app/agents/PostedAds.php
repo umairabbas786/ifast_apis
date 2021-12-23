@@ -31,6 +31,7 @@ class PostedAds extends ElectroApi {
                 AdsTableSchema::LOCATION => $ads->getLocation(),
                 AdsTableSchema::AVAILABILITY_STATUS => $ads->isAvailabilityStatus(),
                 AdsTableSchema::VEHICLE_TYPE => $ads->getVehicleType(),
+                AdsTableSchema::VEHICLE_NUMBER_PLATE => $this->createLinkForDriverImage($ads->getVehicleNumberPlate()),
                 AdsTableSchema::REGISTERED_AS => $ads->getRegisteredAs(),
                 AdsTableSchema::CREATED_AT => $ads->getCreatedAt()
             ]);

@@ -10,17 +10,19 @@ class AdsEntity {
     private string $location;
     private bool $availability_status;
     private string $vehicle_type;
+    private string $vehicle_number_plate;
     private string $registered_as;
     private bool $status;
     private string $created_at;
     private string $updated_at;
 
-    public function __construct(string $uid, string $driver_id, string $driver_name, string $location, string $vehicle_type, string $registered_as,  string $created_at, string $updated_at, bool $availability_status = false, bool $status = false) {
+    public function __construct(string $uid, string $driver_id, string $driver_name, string $location, string $vehicle_type, string $vehicle_number_plate, string $registered_as,  string $created_at, string $updated_at, bool $availability_status = false, bool $status = false) {
         $this->uid = $uid;
         $this->driver_id = $driver_id;
         $this->driver_name = $driver_name;
         $this->location = $location;
         $this->vehicle_type = $vehicle_type;
+        $this->vehicle_number_plate = $vehicle_number_plate;
         $this->registered_as = $registered_as;
         $this->availability_status = $availability_status;
         $this->status = $status;
@@ -74,6 +76,14 @@ class AdsEntity {
 
     public function setVehicleType(string $vehicle_type): void {
         $this->vehicle_type = $vehicle_type;
+    }
+
+    public function getVehicleNumberPlate(): string {
+        return $this->vehicle_number_plate;
+    }
+
+    public function setVehicleNumberPlate(string $vehicle_number_plate): void {
+        $this->vehicle_number_plate = $vehicle_number_plate;
     }
 
     public function getRegisteredAs(): string {

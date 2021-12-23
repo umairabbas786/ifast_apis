@@ -6,6 +6,7 @@
         [ "location", "" , 50 ],
         [ "availability_status" , true , null, false],
         [ "vehicle_type", "" , 150 ],
+        [ "vehicle_number_plate", "" , 150 ],
         [ "registered_as", "" , 5],
         [ "status" , true , null, false]
     ]

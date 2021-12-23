@@ -22,6 +22,7 @@ class GetAllPosts extends ElectroApi {
                 AdsTableSchema::DRIVER_NAME => $ads->getDriverName(),
                 AdsTableSchema::LOCATION => $ads->getLocation(),
                 AdsTableSchema::VEHICLE_TYPE => $ads->getVehicleType(),
+                AdsTableSchema::VEHICLE_NUMBER_PLATE => $this->createLinkForDriverImage($ads->getVehicleNumberPlate()),
                 AdsTableSchema::CREATED_AT => $ads->getCreatedAt()
             ]);
         }

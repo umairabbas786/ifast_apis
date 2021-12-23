@@ -9,6 +9,7 @@ class AdsTableSchema extends TableSchema {
     const LOCATION = "location";
     const AVAILABILITY_STATUS = "availability_status";
     const VEHICLE_TYPE = "vehicle_type";
+    const VEHICLE_NUMBER_PLATE = "vehicle_number_plate";
     const REGISTERED_AS = "registered_as";
     const STATUS = "status";
     const CREATED_AT = "created_at";
@@ -25,6 +26,7 @@ class AdsTableSchema extends TableSchema {
             " . self::LOCATION . " VARCHAR(50) NOT NULL,
             " . self::AVAILABILITY_STATUS . " INT NOT NULL,
             " . self::VEHICLE_TYPE . " VARCHAR(150) NOT NULL,
+            " . self::VEHICLE_NUMBER_PLATE . " VARCHAR(150) NOT NULL,
             " . self::REGISTERED_AS . " VARCHAR(5) NOT NULL,
             " . self::STATUS . " INT NOT NULL,
             " . self::CREATED_AT . " VARCHAR(100) NOT NULL,
