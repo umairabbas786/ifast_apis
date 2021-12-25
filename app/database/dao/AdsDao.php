@@ -170,7 +170,9 @@ class AdsDao extends TableDao {
             ->withTableName(AdsEntity::TABLE_NAME)
             ->columns(['*'])
             ->whereParams([
-                [AdsTableSchema::VEHICLE_TYPE, '=', $this->escape_string($driver_id)]
+                [AdsTableSchema::VEHICLE_TYPE, '=', $this->escape_string($driver_id)],
+                ['AND'],
+                [AdsTableSchema::AVAILABILITY_STATUS, '=', 1]
             ])
             ->generate();
 
@@ -194,6 +196,23 @@ class AdsDao extends TableDao {
             ->generate();
 
         return (bool) mysqli_query($this->getConnection(), $query);
+    }
+
+    public function getAdsWithDriverIDEntity(string $driver_id): ?AdsEntity {
+        $query = QueryBuilder::withQueryType(QueryType::SELECT)
+            ->withTableName(AdsEntity::TABLE_NAME)
+            ->columns(['*'])
+            ->whereParams([
+                [AdsTableSchema::DRIVER_ID, '=', $this->escape_string($driver_id)]
+            ])
+            ->generate();
+
+        $result = mysqli_query($this->getConnection(), $query);
+
+        if ($result && $result->num_rows >= 1) {
+            return AdsFactory::mapFromDatabaseResult(mysqli_fetch_assoc($result));
+        }
+        return null;
     }
 
 }

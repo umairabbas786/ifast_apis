@@ -27,7 +27,7 @@ class AdsTableSchema extends TableSchema {
             " . self::AVAILABILITY_STATUS . " INT NOT NULL,
             " . self::VEHICLE_TYPE . " VARCHAR(150) NOT NULL,
             " . self::VEHICLE_NUMBER_PLATE . " VARCHAR(150) NOT NULL,
-            " . self::REGISTERED_AS . " VARCHAR(5) NOT NULL,
+            " . self::REGISTERED_AS . " VARCHAR(500) NOT NULL,
             " . self::STATUS . " INT NOT NULL,
             " . self::CREATED_AT . " VARCHAR(100) NOT NULL,
             " . self::UPDATED_AT . " VARCHAR(100) NOT NULL

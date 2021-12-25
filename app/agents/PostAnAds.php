@@ -10,7 +10,7 @@ class PostAnAds extends ElectroApi {
     const LOCATION = "location";
     const AVAILABILITY_STATUS = "availability_status";
     const VEHICLE_TYPE = "vehicle_type";
-    const VEHIVLE_NUMBER_PLATE = "vehicle_number_plate";
+    const VEHICLE_NUMBER_PLATE = "vehicle_number_plate";
     const REGISTERED_AS = "registered_as";
 
     protected function onAssemble() {
@@ -28,17 +28,34 @@ class PostAnAds extends ElectroApi {
                 $this->killAsBadRequestWithMissingParamException($required_field);
             }
         }
-        if (!isset($_FILES[self::VEHIVLE_NUMBER_PLATE])) {
-            $this->killAsBadRequestWithMissingParamException(self::VEHIVLE_NUMBER_PLATE);
+        if (!isset($_FILES[self::VEHICLE_NUMBER_PLATE])) {
+            $this->killAsBadRequestWithMissingParamException(self::VEHICLE_NUMBER_PLATE);
         }
     }
 
     protected function onDevise() {
 
+        $checkAds = $this->getAppDB()->getAdsDao()->getAdsWithDriverID($_POST[self::DRIVER_ID]);
+
+        if(count($checkAds) === 1){
+            $this->killAsFailure([
+                "you_are_already_been_registered" => true
+            ]);
+        }
+
+        /** @var AdsEntity $checkAd */
+        foreach($checkAds as $checkAd){
+            if($checkAd->getVehicleType() == $_POST[self::VEHICLE_TYPE]){
+                $this->killAsFailure([
+                    "Already_registered_with_this_vehicle" => true
+                ]);
+            }
+        }
+
         $profilePictureGeneratedName = "";
-        $isProfilePictureImageSaved = ImageUploader::withSrc($_FILES[self::VEHIVLE_NUMBER_PLATE]['tmp_name'])
+        $isProfilePictureImageSaved = ImageUploader::withSrc($_FILES[self::VEHICLE_NUMBER_PLATE]['tmp_name'])
             ->destinationDir($this->getDriverImageDirPath())
-            ->generateUniqueName($_FILES[self::VEHIVLE_NUMBER_PLATE]['name'])
+            ->generateUniqueName($_FILES[self::VEHICLE_NUMBER_PLATE]['name'])
             ->mapGeneratedName($profilePictureGeneratedName)
             ->compressQuality(75)
             ->save();

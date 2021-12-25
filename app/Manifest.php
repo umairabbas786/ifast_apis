@@ -138,6 +138,7 @@ class Manifest {
         'agents' => [
             AcceptDeliveryRequest::class,
             ChangeDriverAvailabilityStatus::class,
+            ChangeInstantAvailability::class,
             ChangePartnerStatus::class,
             ChangePendingStatusOfDelivery::class,
             ConfirmDeliveryRequest::class,
@@ -155,6 +156,7 @@ class Manifest {
             GetAllPosts::class,
             GetCustomerNotification::class,
             GetDriverNotification::class,
+            GetPartnerType::class,
             LoginCustomer::class,
             LoginDriver::class,
             MakeDeliveryCustomer::class,

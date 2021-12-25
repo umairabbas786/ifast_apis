@@ -43,6 +43,28 @@ class PayToDriver extends ElectroApi {
         $customerbalance->setBalance($customerbalance->getBalance() - (float) $_POST[self::BALANCE]);
         $customerbalance = $this->getAppDB()->getCustomerWalletDao()->updateCustomerWallet($customerbalance);
 
+//        $deliveries = $this->getAppDB()->getDriverPartnerDao()
+//            ->getDriverPartnerWithDriverId($_POST[self::DRIVER_ID]);
+//
+//        $partners = [];
+//        if (count($deliveries) === 1){ //split balance into 2
+//            $payment = ((float) $_POST[self::BALANCE] * 50) / 100;
+//            /** @var DriverPartnerEntity $delivery */
+//            foreach($deliveries as $delivery){
+//                $partners = $this->getAppDB()->getDriverWalletDao()->getDriverWalletWithDriverId($delivery->getPartnerId());
+//                /** @var DriverWalletEntity $partner */
+//                foreach ($partners as $partner){
+//                    $old_balance = $partner->getBalance();
+//                }
+//            }
+//        }
+//        if (count($deliveries) === 2){ //split balance into 3
+//
+//        }
+//        if (count($deliveries) === 3){ //split balance into 4
+//
+//        }
+
         /** @var DriverWalletEntity $wallet */
         $wallet = $this->getAppDB()->getDriverWalletDao()->getDriverWalletWithDriverIdEntity($_POST[self::DRIVER_ID]);
         if($wallet === null){

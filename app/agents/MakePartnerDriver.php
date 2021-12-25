@@ -40,7 +40,7 @@ class MakePartnerDriver extends ElectroApi {
         $checkPartner = $this->getAppDB()->getDriverPartnerDao()
             ->getDriverPartnerWithDriverIdAndPartnerId($_POST[self::DRIVER_ID],$_POST[self::PARTNER_ID]);
 
-        if($checkPartner !== null){
+        if($checkPartner !== null) {
             $this->killAsFailure([
                 "partner_already_registered" => true
             ]);
@@ -48,7 +48,27 @@ class MakePartnerDriver extends ElectroApi {
 
         $deliveries = $this->getAppDB()->getDriverPartnerDao()
             ->getDriverPartnerWithDriverId($_POST[self::DRIVER_ID]);
-        if(count($deliveries) === 4){
+
+        /** @var DriverPartnerEntity $delivery */
+        foreach($deliveries as $delivery){
+            if($delivery->getPartnerType() == $_POST[self::PARTNER_TYPE]){
+                $this->killAsFailure([
+                    "cant_add_partner_with_same_type" => true
+                ]);
+            }
+        }
+
+        $posted_ads = $this->getAppDB()->getAdsDao()->getAdsWithDriverID($_POST[self::DRIVER_ID]);
+        /** @var AdsEntity $posted_ad */
+        foreach($posted_ads as $posted_ad){
+            if($posted_ad->getRegisteredAs() == $_POST[self::PARTNER_TYPE]){
+                $this->killAsFailure([
+                    "partnership_error" => true
+                ]);
+            }
+        }
+
+        if(count($deliveries) === 3){
             $this->killAsFailure([
                 "driver_can_add_upto_4_partners" => true
             ]);
